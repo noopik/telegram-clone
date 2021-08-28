@@ -1,4 +1,3 @@
-import { AvatarDefault } from '../../assets/images';
 import { dispatchTypes } from '../../utils';
 
 const initialUser = {

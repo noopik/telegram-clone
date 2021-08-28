@@ -1,13 +1,80 @@
-body {
+* {
+  box-sizing: border-box;
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+body {
+  font-family: 'Rubik', sans-serif;
 }
+
+
+/* START = TYPHOGRAPHY */
+
+.text-lg-bold {
+  font-family: Rubik;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 29px;
+  /* line-height: 34px; */
+}
+
+.text-md-bold {
+  font-family: Rubik;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 22px;
+  line-height: 26px;
+}
+
+.text-md-regular {
+  font-family: Rubik;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 16px;
+  line-height: 19px;
+}
+
+.text-sm-regular {
+  font-family: Rubik;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 14px;
+  line-height: 17px;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.anchor {
+  text-decoration: none;
+}
+
+.text-bold {
+  font-weight: 500;
+}
+
+.anchor:hover {
+  opacity: 0.5;
+}
+
+
+/* END = TYPHOGRAPHY */
+
+
+/* START = COLOR */
+
+.primary {
+  color: #7e98df;
+}
+
+.black {
+  color: #232323;
+}
+
+.gray {
+  color: #848484;
+}
+
+
+/* END = COLOR */
