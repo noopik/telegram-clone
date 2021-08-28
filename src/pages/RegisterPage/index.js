@@ -35,7 +35,6 @@ const RegisterPage = () => {
                 fill="#7E98DF"
               />
             </svg>
-
             <h3 className="text-md-bold primary text-center">Register</h3>
           </div>
           <p className="text-sm-regular wellcome">Hi, Welcome back!</p>
