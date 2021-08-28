@@ -200,17 +200,6 @@ export const StyledHomepage = styled.div`
     main {
       background-color: #fafafa;
       flex: 1;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      p {
-        font-family: Rubik;
-        font-style: normal;
-        font-weight: normal;
-        font-size: 24px;
-        line-height: 28px;
-        color: #848484;
-      }
     }
   }
 

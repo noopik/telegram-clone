@@ -9,8 +9,14 @@ import IC_Graph from './IC_Graph.svg';
 import IC_List from './IC_List.svg';
 import IC_Lock from './IC_Lock.svg';
 import IC_Monitor from './IC_Monitor.svg';
+import IC_Plus from './IC_Plus.svg';
+import IC_Box from './IC_box.svg';
+import IC_Face from './IC_Face.svg';
 
 export {
+  IC_Plus,
+  IC_Box,
+  IC_Face,
   IC_Bell,
   IC_Graph,
   IC_List,
