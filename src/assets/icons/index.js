@@ -12,6 +12,7 @@ import IC_Monitor from './IC_Monitor.svg';
 import IC_Plus from './IC_Plus.svg';
 import IC_Box from './IC_box.svg';
 import IC_Face from './IC_Face.svg';
+import IC_logout from './IC_logout.svg';
 
 export {
   IC_Plus,
@@ -28,4 +29,5 @@ export {
   IC_Question,
   IC_Setting,
   IC_Telephone,
+  IC_logout,
 };

@@ -2,6 +2,7 @@ import React from 'react';
 import { AvatarDefault } from '../../../assets';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
+import { breakpoints } from '../../../utils/breakpoints';
 
 const MessageCard = ({ username, avatar, message, time }) => {
   return (
@@ -47,6 +48,12 @@ const StyledMessageCard = styled.div`
     width: 64px;
     height: 64px;
     border-radius: 20px;
+    ${breakpoints.lessThan('lg')` 
+      display: none; 
+    `}
+    ${breakpoints.lessThan('sm')`
+        display: block; 
+    `}
     &:hover {
       cursor: pointer;
     }
@@ -60,6 +67,9 @@ const StyledMessageCard = styled.div`
   .content-wrapper {
     display: flex;
     flex: 1;
+    ${breakpoints.lessThan('sm')` 
+      display: none; 
+    `}
     &:hover {
       cursor: pointer;
       opacity: 0.6;
