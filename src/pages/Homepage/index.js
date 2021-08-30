@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Route, Switch, useHistory, useRouteMatch } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { Route, Switch, useRouteMatch } from 'react-router-dom';
 import styled from 'styled-components';
 import { AvatarDefault, IC_Box, IC_Face, IC_Plus } from '../../assets';
 import { Dashboard, ProfileUser } from '../../components/molecules';
@@ -8,7 +9,7 @@ import { StyledHomepage } from './styled';
 
 const HomePage = () => {
   let { path } = useRouteMatch();
-  const router = useHistory();
+  const userState = useSelector((state) => state.userReducer);
   const [messages, setMessages] = useState([1, 2]);
   const [showContactInfo, setShowContactInfo] = useState(false);
 
@@ -23,7 +24,13 @@ const HomePage = () => {
           </Route>
           <Route path={`/profile`}>
             <aside>
-              <ProfileUser />
+              <ProfileUser
+                idUser={userState?.idUser}
+                username={userState.name}
+                avatar={userState.avatar}
+                phone={userState.phone}
+                biography={userState?.biography}
+              />
             </aside>
           </Route>
         </Switch>
@@ -138,8 +145,8 @@ const HomePage = () => {
                     xmlns="http://www.w3.org/2000/svg"
                   >
                     <path
-                      fill-rule="evenodd"
-                      clip-rule="evenodd"
+                      fillRule="evenodd"
+                      clipRule="evenodd"
                       d="M3.20711 9.3271L9.22925 3.30496C9.24226 3.29283 9.2551 3.28044 9.26777 3.26777L9.97487 2.56066C10.5607 1.97487 10.5607 1.02513 9.97487 0.43934C9.38909 -0.146447 8.43934 -0.146447 7.85355 0.43934L7.52579 0.767105L7.52513 0.766442L0.732233 7.55933C-0.244077 8.53564 -0.244079 10.1186 0.732233 11.0949L7.14646 17.5091L7.52513 17.8878L7.85357 18.2162C8.43936 18.802 9.3891 18.802 9.97489 18.2162C10.5607 17.6304 10.5607 16.6807 9.97489 16.0949L9.64645 15.7664L9.26778 15.3878C9.26635 15.3863 9.2649 15.3849 9.26346 15.3835L3.20711 9.3271Z"
                       fill="#7E98DF"
                     />
@@ -167,7 +174,7 @@ const HomePage = () => {
                     <path
                       d="M0 4C0 1.79086 1.79086 0 4 0H18C20.2091 0 22 1.79086 22 4V16C22 18.2091 20.2091 20 18 20H1C0.447716 20 0 19.5523 0 19V4Z"
                       stroke="#7E98DF"
-                      stroke-width="4"
+                      strokeWidth="4"
                       mask="url(#path-1-inside-1)"
                     />
                     <rect
@@ -229,7 +236,7 @@ const StyledEmptyChat = styled.div`
 `;
 
 const StyledMainContent = styled.div`
-  ${breakpoints.lessThan('2xl')`
+  /* ${breakpoints.lessThan('2xl')`
       background-color: yellow;
     `}
   ${breakpoints.lessThan('xl')`
@@ -246,7 +253,7 @@ const StyledMainContent = styled.div`
     `}
     ${breakpoints.lessThan('xsm')`
       background-color: pink;
-    `}
+    `} */
 
   display: flex;
   flex-shrink: 1;

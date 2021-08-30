@@ -1,16 +1,15 @@
 import { dispatchTypes } from '../../utils';
 
 const initialUser = {
-  born: '',
-  email: '',
-  gender: '',
-  idUser: '',
-  image: null,
   name: '',
-  phoneNumber: 0,
-  verified: 0,
+  email: '',
+  idUser: '',
+  avatar: null,
+  phone: 0,
+  verification: 0,
   refresh: '',
   token: '',
+  biography: '',
 };
 
 // REDUCER FOR REGISTER FLOW
@@ -19,15 +18,12 @@ export const userReducer = (state = { initialUser }, action) => {
     case dispatchTypes.setUserLogin:
       return {
         ...state,
-        born: action.value.born,
-        email: action.value.email,
-        gender: action.value.gender,
-        idUser: action.value.idUser,
-        image: action.value.image,
-        password: action.value.password,
         name: action.value.name,
-        phoneNumber: action.value.phoneNumber,
-        verified: action.value.verified,
+        email: action.value.email,
+        idUser: action.value.idUser,
+        avatar: action.value.avatar,
+        phone: action.value.phone,
+        verification: action.value.verification,
         refresh: action.value.refresh,
         token: action.value.token,
       };
@@ -38,12 +34,22 @@ export const userReducer = (state = { initialUser }, action) => {
     case dispatchTypes.setUserAvatar:
       return {
         ...state,
-        image: action.value,
+        avatar: action.value,
       };
     case dispatchTypes.setUserName:
       return {
         ...state,
         name: action.value,
+      };
+    case dispatchTypes.setUserPhone:
+      return {
+        ...state,
+        phone: action.value,
+      };
+    case dispatchTypes.setUserBiography:
+      return {
+        ...state,
+        biography: action.value,
       };
     default:
       return state;

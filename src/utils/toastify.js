@@ -32,9 +32,19 @@ export const toastify = (messagge, type) => {
         draggable: true,
         progress: undefined,
       });
-    default:
+    case 'right':
       return toast.info(messagge, {
         position: 'top-right',
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    default:
+      return toast.info(messagge, {
+        position: 'top-center',
         autoClose: 5000,
         hideProgressBar: false,
         closeOnClick: true,

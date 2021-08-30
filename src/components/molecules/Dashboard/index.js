@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import {
@@ -10,11 +11,13 @@ import {
   IC_Setting,
   IC_Telephone,
 } from '../../../assets';
+import { dispatchTypes } from '../../../utils';
 import { breakpoints } from '../../../utils/breakpoints';
 import MessageCard from '../MessageCard';
 
 const Dashboard = () => {
   const router = useHistory();
+  const dispatch = useDispatch();
 
   // const [messages, setMessages] = useState([1, 2]);
   const [navbarPopup, setNavbarPopup] = useState(false);
@@ -86,7 +89,9 @@ const Dashboard = () => {
             <div
               className="row"
               onClick={() => {
-                router.replace('/auth/login');
+                localStorage.removeItem('token');
+                dispatch({ type: dispatchTypes.setUserLogout });
+                return router.replace('/auth/login');
               }}
             >
               <img src={IC_logout} alt="icon" />
@@ -105,7 +110,7 @@ const Dashboard = () => {
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
           >
-            <circle cx="9.5" cy="9.5" r="8" stroke="#848484" stroke-width="3" />
+            <circle cx="9.5" cy="9.5" r="8" stroke="#848484" strokeWidth="3" />
             <rect
               x="14"
               y="16.1213"
@@ -145,27 +150,6 @@ const Dashboard = () => {
         </div>
       </div>
       <div className="body">
-        <MessageCard />
-        <MessageCard />
-        <MessageCard />
-        <MessageCard />
-        <MessageCard />
-        <MessageCard />
-        <MessageCard />
-        <MessageCard />
-        <MessageCard />
-        <MessageCard />
-        <MessageCard />
-        <MessageCard />
-        <MessageCard />
-        <MessageCard />
-        <MessageCard />
-        <MessageCard />
-        <MessageCard />
-        <MessageCard />
-        <MessageCard />
-        <MessageCard />
-        <MessageCard />
         <MessageCard />
         <MessageCard />
       </div>

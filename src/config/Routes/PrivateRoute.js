@@ -1,56 +1,54 @@
-// import React, { useEffect, useState } from 'react';
-// import { useDispatch } from 'react-redux';
-// import { Redirect, Route } from 'react-router-dom';
-// import { Axios } from '../../config/apiAdapter';
-// import { Toast } from '../../components/atoms';
-// import { showLoading } from '../../redux/actions';
-// import { typeRedux } from '../../utils';
+import React, { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { Redirect, Route } from 'react-router-dom';
+import apiAdapter from '../../config/apiAdapter';
+import { dispatchTypes, toastify } from '../../utils';
 
-// const PrivateRoute = ({ component: Component, ...rest }) => {
-//   const [isLogin, setIsLogin] = useState({ check: false, passed: false });
-//   const token = localStorage.getItem('token');
-//   const dispatch = useDispatch();
+const PrivateRoute = ({ component: Component, ...rest }) => {
+  const [isLogin, setIsLogin] = useState({ check: false, result: false });
+  const token = localStorage.getItem('token');
 
-//   useEffect(() => {
-//     dispatch(showLoading(true));
-//     Axios.get(`/users/verify-token`, {
-//       headers: { Authorization: `Bearer ${token}` },
-//     })
-//       .then((result) => {
-//         const dataResult = result.data.data;
+  // const dispatch = useDispatch();
+  useEffect(() => {
+    if (token) {
+      apiAdapter
+        .get('/users/verify-token', {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        .then((res) => {
+          // console.log(res);
+          setIsLogin({ check: true, result: true });
+        })
+        .catch((err) => {
+          // console.log(err);
+          setIsLogin({ check: true, result: false });
+        });
+    } else {
+      setIsLogin({ check: true, result: false });
+    }
 
-//         setIsLogin({ check: true, passed: true });
-//         dispatch(showLoading(false));
-//         dispatch({ type: typeRedux.setUserLogin, value: dataResult });
-//       })
-//       .catch((err) => {
-//         console.log(err.response);
-//         setIsLogin({ check: true, passed: false });
-//         dispatch(showLoading(false));
-//         return Toast(
-//           `Uppss, you don't have access! Please login before`,
-//           'error'
-//         );
-//       });
-//   }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token]);
+  // console.log('isLogin in private', isLogin);
 
-//   // console.log(isLogin);
-//   return (
-//     <>
-//       {isLogin.check && (
-//         <Route
-//           {...rest}
-//           render={(props) => {
-//             return isLogin.passed ? (
-//               <Component {...props} />
-//             ) : (
-//               <Redirect to="/customer-login" />
-//             );
-//           }}
-//         />
-//       )}
-//     </>
-//   );
-// };
+  // console.log(isLogin);
+  return (
+    <>
+      {isLogin.check && (
+        <Route
+          {...rest}
+          render={(props) => {
+            return isLogin.result ? (
+              <Component {...props} />
+            ) : (
+              <Redirect to="/auth/login" />
+            );
+          }}
+        />
+      )}
+      {!isLogin.check && null}
+    </>
+  );
+};
 
-// export default PrivateRoute;
+export default PrivateRoute;

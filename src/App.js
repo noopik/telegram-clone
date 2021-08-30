@@ -1,9 +1,11 @@
 // import { useEffect } from 'react';
 // import io from 'socket.io-client';
-import { store, persistor } from './redux/store';
+import { Provider } from 'react-redux';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { PersistGate } from 'redux-persist/integration/react';
 import Routes from './config/Routes';
-import { Provider } from 'react-redux';
+import { persistor, store } from './redux/store';
 
 function App() {
   // useEffect(() => {
@@ -15,6 +17,17 @@ function App() {
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
           <Routes />
+          <ToastContainer
+            position="top-center"
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+          />
         </PersistGate>
       </Provider>
     </>

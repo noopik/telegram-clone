@@ -2,7 +2,15 @@ import React from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 
-const Button = ({ children, icon, primary, outline, className, onClick }) => {
+const Button = ({
+  children,
+  icon,
+  primary,
+  outline,
+  className,
+  onClick,
+  disable,
+}) => {
   const icons = {
     google: (
       <svg
@@ -24,7 +32,8 @@ const Button = ({ children, icon, primary, outline, className, onClick }) => {
       primary={primary}
       outline={outline}
       className={className}
-      onClick={onClick}
+      onClick={disable ? false : onClick}
+      disable={disable}
     >
       {icon && icons[icon]}
       <p>{children}</p>
@@ -38,11 +47,11 @@ Button.propTypes = {
   className: PropTypes.string,
   primary: PropTypes.bool,
   outline: PropTypes.bool,
-  onClick: PropTypes.func,
 };
 export default Button;
 
 const StyledButton = styled.div`
+  border: 0;
   height: 60px;
   border-radius: 70px;
   font-family: Rubik;
@@ -53,20 +62,28 @@ const StyledButton = styled.div`
   justify-content: center;
   align-items: center;
   gap: 15px;
-  background-color: ${({ primary }) => {
+  background-color: ${({ primary, disable }) => {
+    if (disable) return '#bebebe';
     if (primary) return '#7e98df';
     return 'transparent';
   }};
-  color: ${({ primary, outline }) => {
+  color: ${({ primary, outline, disable }) => {
+    if (disable) return '#858585';
     if (primary) return '#FFFFFF';
-    if (outline) return '#7E98DF;';
+    if (outline) return '#7E98DF';
     return 'transparent';
   }};
   border: ${({ outline }) => {
     if (outline) return '1px solid #7E98DF';
   }};
   &:hover {
-    opacity: 0.7;
-    cursor: pointer;
+    opacity: ${({ disable }) => {
+      if (disable) return 1;
+      return 0.7;
+    }};
+    cursor: ${({ disable }) => {
+      if (disable) return 'not-allowed';
+      return 'pointer';
+    }};
   }
 `;

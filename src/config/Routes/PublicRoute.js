@@ -1,50 +1,40 @@
-// import React, { useEffect, useState } from 'react';
-// import { useDispatch } from 'react-redux';
-// import { Redirect, Route } from 'react-router-dom';
-// import { Axios } from '..';
-// import { showLoading } from '../../redux/actions';
-// import { typeRedux } from '../../utils';
+import React, { useEffect, useState } from 'react';
+import { Redirect, Route } from 'react-router-dom';
 
-// const PublicRoute = ({ component: Component, ...rest }) => {
-//   const [isLogin, setIsLogin] = useState({ check: false, passed: false });
-//   // const userState = useSelector((state) => state.userReducer);
-//   const token = localStorage.getItem('token');
-//   const dispatch = useDispatch();
+const PublicRoute = ({ component: Component, ...rest }) => {
+  const [isLogin, setIsLogin] = useState({ check: false, result: false });
 
-//   // CHECK IS USER LOGIN EXIST OR NOT
-//   useEffect(() => {
-//     dispatch(showLoading(true));
-//     Axios.get(`/users/verify-token`, {
-//       headers: { Authorization: `Bearer ${token}` },
-//     })
-//       .then((result) => {
-//         const dataResult = result.data.data;
-//         setIsLogin({ check: true, passed: true });
-//         dispatch({ type: typeRedux.setUserLogin, value: dataResult });
-//         dispatch(showLoading(false));
-//       })
-//       .catch((err) => {
-//         setIsLogin({ check: true, passed: false });
-//         dispatch(showLoading(false));
-//       });
-//   }, []);
+  const token = localStorage.getItem('token');
 
-//   return (
-//     <>
-//       {isLogin.check && (
-//         <Route
-//           {...rest}
-//           render={(props) => {
-//             return isLogin.passed ? (
-//               <Redirect to="/" />
-//             ) : (
-//               <Component {...props} />
-//             );
-//           }}
-//         />
-//       )}
-//     </>
-//   );
-// };
+  useEffect(() => {
+    if (token) {
+      setIsLogin({ check: true, result: true });
+    } else {
+      setIsLogin({ check: true, result: false });
+    }
+  }, [token]);
 
-// export default PublicRoute;
+  if (!isLogin.check) {
+    return null;
+  }
+
+  // console.log('isLogin', isLogin);
+  return (
+    <>
+      {isLogin.check && (
+        <Route
+          {...rest}
+          render={(props) => {
+            return isLogin.result ? (
+              <Redirect to="/" />
+            ) : (
+              <Component {...props} />
+            );
+          }}
+        />
+      )}
+    </>
+  );
+};
+
+export default PublicRoute;

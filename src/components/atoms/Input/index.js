@@ -11,6 +11,7 @@ const Input = ({
   type,
   id,
   showPassword,
+  innerRef,
   ...props
 }) => {
   // id = standard-error-helper-text
@@ -62,8 +63,9 @@ const Input = ({
         id={id}
         label={label}
         defaultValue={defaultValue}
-        helperText={errorMessage}
+        helperText={error ? errorMessage : null}
         type={type}
+        ref={innerRef}
         {...props}
       />
       <div className="icon" onClick={showPassword}>

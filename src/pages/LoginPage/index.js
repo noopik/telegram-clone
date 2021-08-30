@@ -1,16 +1,67 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import { Button, Card, DividerAuthSwitch, Input } from '../../components/atoms';
 import { AuthLayout } from '../../components/Layout';
-import { breakpoints } from '../../utils';
+import {
+  breakpoints,
+  dispatchTypes,
+  regexEmailVadidationType,
+  toastify,
+} from '../../utils';
+import { useForm } from 'react-hook-form';
+import { apiAdapter } from '../../config';
+import { useDispatch } from 'react-redux';
 
 const LoginPage = () => {
   const [isShowPassword, setIsShowPasswrod] = useState('password');
+  const [handleButtonDisable, setHandleButtonDisable] = useState(true);
+  const dispatch = useDispatch();
+  const router = useHistory();
 
+  const {
+    register,
+    handleSubmit,
+    watch,
+    getValues,
+    formState: { errors },
+  } = useForm();
+
+  const onSubmit = (data) => {
+    // console.log('dataPost', data);
+    apiAdapter
+      .post('/users/login', data)
+      .then((res) => {
+        const token = res.data.data.token;
+        const resData = res.data.data;
+        // console.log('res data', res.data.data);
+        dispatch({ type: dispatchTypes.setUserLogin, value: resData });
+        // console.log('token', token);
+        localStorage.setItem('token', token);
+        router.replace('/');
+      })
+      .catch((err) => {
+        // console.log('err', err);
+        // console.log('err.response', err.response);
+        if (err.response) {
+          const message = err.response.data.error;
+          toastify(message);
+        }
+      });
+  };
+  // console.log('errors', errors);
   useEffect(() => {
     document.title = 'Telegram | Login';
   }, []);
+
+  useEffect(() => {
+    if (getValues('email') && getValues('password')) {
+      setHandleButtonDisable(false);
+    } else {
+      setHandleButtonDisable(true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [watch('email'), watch('password')]);
 
   return (
     <AuthLayout>
@@ -20,7 +71,17 @@ const LoginPage = () => {
           <p className="text-sm-regular wellcome">Hi, Welcome back!</p>
           <form>
             <div className="row">
-              <Input label="Email" id="name" />
+              <Input
+                label="Email"
+                id="name"
+                {...register('email', {
+                  required: true,
+                  pattern: regexEmailVadidationType,
+                })}
+                error={errors.email ? true : false}
+                errorMessage="Email invalid"
+                ref={null}
+              />
             </div>
             <div className="row">
               <Input
@@ -32,6 +93,12 @@ const LoginPage = () => {
                     ? setIsShowPasswrod('text')
                     : setIsShowPasswrod('password')
                 }
+                {...register('password', {
+                  required: true,
+                })}
+                error={errors.password ? true : false}
+                errorMessage="Required Password"
+                ref={null}
               />
             </div>
             <div className="row">
@@ -42,11 +109,17 @@ const LoginPage = () => {
                 Forgot password?
               </Link>
             </div>
-            <Button primary>Login</Button>
+            <Button
+              primary
+              disable={handleButtonDisable}
+              onClick={handleSubmit(onSubmit)}
+            >
+              Login
+            </Button>
           </form>
           <DividerAuthSwitch title="Login with" />
           <Button outline icon="google">
-            Login
+            Google
           </Button>
           <div className="footer">
             <p className="text-sm-regular text-center">
