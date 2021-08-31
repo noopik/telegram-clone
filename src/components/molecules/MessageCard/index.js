@@ -4,9 +4,9 @@ import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { breakpoints } from '../../../utils/breakpoints';
 
-const MessageCard = ({ username, avatar, message, time }) => {
+const MessageCard = ({ username, avatar, message, time, onClick }) => {
   return (
-    <StyledMessageCard>
+    <StyledMessageCard onClick={onClick}>
       <div className="avatar-wrapper">
         <img src={avatar} alt="user" />
       </div>
@@ -17,9 +17,9 @@ const MessageCard = ({ username, avatar, message, time }) => {
         </div>
         <div className="number-wrapper">
           <p className="times">{time}</p>
-          <div className="circle-unread">
+          {/* <div className="circle-unread">
             <p>2</p>
-          </div>
+          </div> */}
         </div>
       </div>
     </StyledMessageCard>
@@ -36,8 +36,8 @@ MessageCard.propTypes = {
 MessageCard.defaultProps = {
   username: 'Username',
   avatar: AvatarDefault,
-  message: 'Message',
-  time: '00:00',
+  // message: 'Message',
+  // time: '00:00',
 };
 
 export default MessageCard;
@@ -60,7 +60,7 @@ const StyledMessageCard = styled.div`
     img {
       width: 100%;
       height: 100%;
-      object-fit: contain;
+      object-fit: cover;
       border-radius: 20px;
     }
   }
@@ -85,7 +85,7 @@ const StyledMessageCard = styled.div`
         font-style: normal;
         font-weight: 500;
         font-size: 20px;
-        margin-bottom: 4px;
+        /* margin-bottom: 2px; */
         line-height: 21px;
         letter-spacing: -0.165px;
         color: #232323;

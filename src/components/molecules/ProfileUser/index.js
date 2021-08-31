@@ -52,13 +52,14 @@ const ProfileUser = ({ username, avatar, phone, biography, idUser }) => {
           return toastify('Succes update image profile', 'right');
         })
         .catch((err) => {
-          // console.log('ERR', err.response);
+          console.log('ERR', err.response);
           const message = err.response?.data.message;
           reset();
           return toastify(message, 'error');
         });
     }
   };
+
   useEffect(() => {
     if (getValues('avatar')) {
       handleAvatar();
@@ -98,8 +99,11 @@ const ProfileUser = ({ username, avatar, phone, biography, idUser }) => {
         return toastify('Succes update phone number', 'right');
       })
       .catch((err) => {
-        // console.log('ERR', err.response);
+        console.log('ERR', err.response);
         const message = err.response?.data.message;
+        if (message.split(' ').shift() === 'Duplicate') {
+          return toastify('Phone alredy used', 'error');
+        }
         // setPhoneSubmit(false);
 
         return toastify(message, 'error');

@@ -5,4 +5,6 @@ export const dispatchTypes = {
   setUserBiography: 'SET_USER_BIOGRAPHY',
   setUserName: 'SET_USER_NAME',
   setUserPhone: 'SET_USER_PHONE',
+  setHistory: 'SET_HISTORY',
+  setRoomActive: 'SET_ROOM_ACTIVE',
 };

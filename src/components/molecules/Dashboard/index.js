@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import {
@@ -13,14 +13,87 @@ import {
 } from '../../../assets';
 import { dispatchTypes } from '../../../utils';
 import { breakpoints } from '../../../utils/breakpoints';
+import { SearchInput } from '../../atoms';
 import MessageCard from '../MessageCard';
+import { useForm } from 'react-hook-form';
+import { apiAdapter } from '../../../config';
+import { roomActiveAction } from '../../../redux/actions/roomActive';
 
-const Dashboard = () => {
+const Dashboard = ({ addContactAction }) => {
   const router = useHistory();
   const dispatch = useDispatch();
+  const token = localStorage.getItem('token');
+  const [resultSearching, setResultSearching] = useState([]);
+  const userState = useSelector((state) => state.userReducer);
+  const [history, setHistory] = useState([]);
 
   // const [messages, setMessages] = useState([1, 2]);
   const [navbarPopup, setNavbarPopup] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    watch,
+    getValues,
+    reset,
+    formState: { errors },
+  } = useForm();
+
+  // START = SEARCHING ACTION
+  const handleSearching = () => {
+    const keyword = watch('seaching');
+    if (keyword) {
+      apiAdapter
+        .get(`/users?src=${keyword}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        .then((res) => {
+          const resData = res.data.data;
+          // console.log(resData);
+          setHistory(resData);
+        })
+        .catch((err) => {
+          // console.log(err.response);
+          if (err?.response?.status === 404) {
+            setResultSearching(null);
+          }
+        });
+    }
+  };
+
+  useEffect(() => {
+    if (watch('seaching')?.length > 0) {
+      handleSearching();
+    } else {
+      reset();
+      setResultSearching([]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [watch('seaching')]);
+
+  // END = SEARCHING ACTION
+
+  // START = DATA HISTORY SEMENTARA
+  useEffect(() => {
+    apiAdapter
+      .get(`/users`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res) => {
+        const resData = res.data.data;
+        // console.log(resData);
+        setHistory(resData);
+      })
+      .catch((err) => {
+        // console.log(err.response);
+        if (err?.response?.status === 404) {
+          setResultSearching(null);
+        }
+      });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // END = DATA HISTORY SEMENTARA
 
   return (
     <StyledDashboard>
@@ -101,34 +174,13 @@ const Dashboard = () => {
         )}
       </div>
       <div className="search-wrapper">
-        <div className="search-input-wrapper">
-          <svg
-            className="icon-search"
-            width="23"
-            height="23"
-            viewBox="0 0 23 23"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <circle cx="9.5" cy="9.5" r="8" stroke="#848484" strokeWidth="3" />
-            <rect
-              x="14"
-              y="16.1213"
-              width="3"
-              height="8.74773"
-              rx="1.5"
-              transform="rotate(-45 14 16.1213)"
-              fill="#848484"
-            />
-          </svg>
-          <input
-            type="text"
-            className="search-input"
-            placeholder="Search contact
-        "
+        <form onSubmit={handleSubmit(handleSearching)}>
+          <SearchInput
+            className="search-input-wrapper"
+            {...register('seaching')}
           />
-        </div>
-        <div className="add-contact">
+        </form>
+        <div className="add-contact" onClick={addContactAction}>
           <svg
             width="23"
             height="23"
@@ -150,8 +202,21 @@ const Dashboard = () => {
         </div>
       </div>
       <div className="body">
-        <MessageCard />
-        <MessageCard />
+        {/* <MessageCard /> */}
+        {history &&
+          history.map((item) => {
+            return (
+              <MessageCard
+                key={item.idUser}
+                username={item.name}
+                avatar={item.avatar}
+                message={item.phone}
+                onClick={() => {
+                  dispatch(roomActiveAction(item.idUser));
+                }}
+              />
+            );
+          })}
       </div>
     </StyledDashboard>
   );
@@ -236,30 +301,9 @@ const StyledDashboard = styled.div`
     gap: 1rem;
     width: 100%;
     .search-input-wrapper {
-      background: #fafafa;
-      border-radius: 15px;
-      padding: 20px;
-      display: flex;
-      gap: 10px;
-      height: 60px;
       ${breakpoints.lessThan('sm')`
         display: none; 
       `}
-      input {
-        width: 100%;
-        border: 0;
-        background-color: transparent;
-        font-family: Rubik;
-        font-style: normal;
-        font-weight: normal;
-        font-size: 16px;
-        line-height: 19px;
-        color: #848484;
-
-        &:focus {
-          outline: none;
-        }
-      }
     }
     .add-contact {
       box-sizing: content-box;

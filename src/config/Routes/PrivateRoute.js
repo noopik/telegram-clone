@@ -3,26 +3,47 @@ import { useDispatch } from 'react-redux';
 import { Redirect, Route } from 'react-router-dom';
 import apiAdapter from '../../config/apiAdapter';
 import { dispatchTypes, toastify } from '../../utils';
+import io from 'socket.io-client';
 
 const PrivateRoute = ({ component: Component, ...rest }) => {
   const [isLogin, setIsLogin] = useState({ check: false, result: false });
   const token = localStorage.getItem('token');
+  const [socket, setSocket] = useState(null);
 
-  // const dispatch = useDispatch();
+  // START = SETUP SOCKET
+  const setupSocket = () => {
+    if (token && !socket) {
+      // const resultSocket = io('http://localhost:3030');
+      const resultSocket = io('http://localhost:3030', {
+        query: {
+          token,
+        },
+      });
+      // resultSocket.on();
+      setSocket(resultSocket);
+    }
+  };
+
+  useEffect(() => {
+    setupSocket();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   useEffect(() => {
     if (token) {
-      apiAdapter
-        .get('/users/verify-token', {
-          headers: { Authorization: `Bearer ${token}` },
-        })
-        .then((res) => {
-          // console.log(res);
-          setIsLogin({ check: true, result: true });
-        })
-        .catch((err) => {
-          // console.log(err);
-          setIsLogin({ check: true, result: false });
-        });
+      setIsLogin({ check: true, result: true });
+      // apiAdapter
+      //   .get('/users/verify-token', {
+      //     headers: { Authorization: `Bearer ${token}` },
+      //   })
+      //   .then((res) => {
+      //     // console.log(res);
+      //     setIsLogin({ check: true, result: true });
+      //   })
+      //   .catch((err) => {
+      //     console.log(err.response);
+      //     setIsLogin({ check: true, result: false });
+      //   });
     } else {
       setIsLogin({ check: true, result: false });
     }
@@ -31,7 +52,6 @@ const PrivateRoute = ({ component: Component, ...rest }) => {
   }, [token]);
   // console.log('isLogin in private', isLogin);
 
-  // console.log(isLogin);
   return (
     <>
       {isLogin.check && (
@@ -39,7 +59,7 @@ const PrivateRoute = ({ component: Component, ...rest }) => {
           {...rest}
           render={(props) => {
             return isLogin.result ? (
-              <Component {...props} />
+              <Component {...props} socket={socket} />
             ) : (
               <Redirect to="/auth/login" />
             );

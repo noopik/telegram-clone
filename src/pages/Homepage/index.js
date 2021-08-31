@@ -1,25 +1,135 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { Route, Switch, useRouteMatch } from 'react-router-dom';
 import styled from 'styled-components';
 import { AvatarDefault, IC_Box, IC_Face, IC_Plus } from '../../assets';
-import { Dashboard, ProfileUser } from '../../components/molecules';
+import {
+  Dashboard,
+  ProfileUser,
+  TransitionsModal,
+} from '../../components/molecules';
 import { breakpoints } from '../../utils/breakpoints';
 import { StyledHomepage } from './styled';
+import { useForm } from 'react-hook-form';
+import { toastify } from '../../utils';
+import { apiAdapter } from '../../config';
+import moment from 'moment';
 
-const HomePage = () => {
+const HomePage = ({ socket }) => {
+  moment.locale('id');
+  const { HOST_SOCKET } = process.env;
   let { path } = useRouteMatch();
   const userState = useSelector((state) => state.userReducer);
-  const [messages, setMessages] = useState([1, 2]);
+  const roomActive = useSelector((state) => state.roomActiveReducer);
+  const [messages, setMessages] = useState([]);
   const [showContactInfo, setShowContactInfo] = useState(false);
+  const token = localStorage.getItem('token');
+  const messagesEndRef = useRef(null);
+  const {
+    register,
+    handleSubmit,
+    watch,
+    getValues,
+    reset,
+    formState: { errors },
+  } = useForm();
 
+  // START =  INPUT MESSAGE
+
+  const sendMessageAction = () => {
+    const message = getValues('message');
+    if (socket) {
+      socket.emit(
+        'sendMsgFromClient',
+        {
+          idSender: userState.idUser,
+          idReceiver: roomActive.idUser,
+          body: message,
+          nameSender: userState.name,
+        },
+        (data) => {
+          console.log('data sendMsgAction', data);
+
+          setMessages((currentValue) => {
+            const message = {
+              idSender: userState.idUser,
+              bodyMessage: data.body,
+            };
+            return [...currentValue, message];
+          });
+        }
+      );
+      reset();
+    }
+  };
+  // END =  INPUT MESSAGE
+
+  // START = MODAL CONTACT
+  const [showModal, setShowModal] = React.useState(false);
+
+  const openModal = () => {
+    setShowModal(true);
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+  };
+  // END = MODAL CONTACT
+
+  // START = MESSAGES
+
+  // ======= Scrool to Bottom
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView();
+  };
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+  // ======= Scrool to Bottom
+
+  useEffect(() => {
+    if (Object.keys(roomActive).length > 1) {
+      apiAdapter
+        .get(`/messages/${roomActive.idUser}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        .then((res) => {
+          const resData = res.data.data;
+          // console.log('resData', resData);
+          setMessages(resData);
+        })
+        .catch((err) => {
+          console.log(err.response);
+        });
+    }
+  }, [roomActive]);
+
+  useEffect(() => {
+    if (Object.keys(roomActive).length > 1 && socket) {
+      socket.on('sendMsgFromServer', (data) => {
+        console.log('data sendMsgFromServer:', data);
+        if (data.idSender === roomActive.idUser) {
+          setMessages((currentValue) => {
+            const update = {
+              bodyMessage: data.body,
+              idSender: data.idSender,
+            };
+            return [...currentValue, update];
+          });
+        } else {
+          return toastify(`${data.nameSender} mengirim pesan`, 'right');
+        }
+      });
+    }
+  }, [socket]);
+  // END = MESSAGES
   return (
     <StyledHomepage>
       <div className="container">
         <Switch>
           <Route exact path={path}>
             <aside>
-              <Dashboard />
+              <Dashboard addContactAction={openModal} />
             </aside>
           </Route>
           <Route path={`/profile`}>
@@ -35,22 +145,36 @@ const HomePage = () => {
           </Route>
         </Switch>
         <main>
-          {messages.length === 0 && (
+          {Object.keys(roomActive).length === 1 && (
             <StyledEmptyChat>
               <p>Please select a chat to start messaging</p>
             </StyledEmptyChat>
           )}
-          {messages.length > 1 && (
+          {Object.keys(roomActive).length > 1 && (
             <StyledMainContent>
               <StyledChatRoom>
                 <div className="header-section">
-                  <div className="contact-wrapper">
+                  <div
+                    className="contact-wrapper"
+                    onClick={() => {
+                      return showContactInfo
+                        ? setShowContactInfo(false)
+                        : setShowContactInfo(true);
+                    }}
+                  >
                     <div className="avatar">
-                      <img src={AvatarDefault} alt="avatar" />
+                      <img
+                        src={
+                          roomActive.avatar ? roomActive.avatar : AvatarDefault
+                        }
+                        alt={roomActive.name}
+                      />
                     </div>
                     <div className="desc">
-                      <h3>Username</h3>
-                      <p>Online</p>
+                      <h3>{roomActive.name}</h3>
+                      <p className={roomActive.status ? 'online' : 'offline'}>
+                        {roomActive.status ? 'Online' : 'Offline'}
+                      </p>
                     </div>
                   </div>
                   <div
@@ -104,18 +228,84 @@ const HomePage = () => {
                   </div>
                 </div>
                 <div className="chat-section">
-                  <div className="chat others">
+                  <div className="display">
+                    {/* <div className="chat others">
                     <img className="avatar" src={AvatarDefault} alt="user" />
                     <p className="message">Oh! Cool Send me photo</p>
                   </div>
                   <div className="chat me">
                     <p className="message">Fromm me</p>
                     <img className="avatar" src={AvatarDefault} alt="user" />
+                  </div> */}
+                    {messages &&
+                      messages.map((chat, index) => {
+                        return (
+                          <>
+                            <div
+                              className={`chat ${
+                                chat.idSender === userState.idUser
+                                  ? 'me'
+                                  : 'others'
+                              }`}
+                            >
+                              <div className="box">
+                                <div className="message-wrapper">
+                                  <p className="message">{chat.bodyMessage}</p>
+                                  <p className="time">
+                                    {moment(chat.createdAt).format('LT')}
+                                  </p>
+                                </div>
+                                <img
+                                  className="avatar"
+                                  src={
+                                    chat.idSender === userState.idUser
+                                      ? userState.avatar
+                                      : roomActive.avatar
+                                  }
+                                  alt={userState.name}
+                                />
+                              </div>
+                            </div>
+                            <div ref={messagesEndRef} />
+                            {/* {chat.idSender !== userState.idUser && (
+                            <div className="chat others">
+                              <img
+                                className="avatar"
+                                src={AvatarDefault}
+                                alt="user"
+                              />
+                              <p className="message">{chat.bodyMessage}</p>
+                            </div>
+                          )}
+                          {chat.idSender === userState.idUser && (
+                            <div className="chat me">
+                              <p className="message">{chat.bodyMessage}</p>
+                              <img
+                                className="avatar"
+                                src={userState.avatar}
+                                alt={userState.name}
+                              />
+                            </div>
+                          )} */}
+                          </>
+                        );
+                      })}
                   </div>
                 </div>
                 <div className="input-section">
-                  <div className="input-wrapper">
-                    <input type="text" placeholder="Type your message.." />
+                  <form
+                    onSubmit={handleSubmit(sendMessageAction)}
+                    className="input-wrapper"
+                  >
+                    <input
+                      type="text"
+                      name="message"
+                      placeholder="Type your message.."
+                      {...register('message', {
+                        required: true,
+                        minLength: 1,
+                      })}
+                    />
                     <div className="action-button-wrapper">
                       <div className="icon">
                         <img src={IC_Plus} alt="icon" />
@@ -127,7 +317,7 @@ const HomePage = () => {
                         <img src={IC_Box} alt="icon" />
                       </div>
                     </div>
-                  </div>
+                  </form>
                 </div>
               </StyledChatRoom>
               <StyledContactInfo show={showContactInfo}>
@@ -151,15 +341,27 @@ const HomePage = () => {
                       fill="#7E98DF"
                     />
                   </svg>
-                  <h3 className="text-md-bold primary text-center">Username</h3>
+                  <h3 className="text-md-bold primary text-center">
+                    {roomActive.name}
+                  </h3>
                 </div>
                 <div className="profile-section">
-                  <img src={AvatarDefault} className="avatar" alt="user" />
+                  <img
+                    src={roomActive.avatar ? roomActive.avatar : AvatarDefault}
+                    alt={roomActive.name}
+                    className="avatar"
+                  />
                 </div>
                 <div className="desc-section">
                   <div className="desc">
-                    <h4 className="text-md-bold">Username</h4>
-                    <p className="text-md-regular">Online</p>
+                    <h4 className="text-md-bold">{roomActive.name}</h4>
+                    <p
+                      className={`text-md-regular ${
+                        roomActive.status ? 'online' : 'offline'
+                      }`}
+                    >
+                      {roomActive.status ? 'Online' : 'Offline'}
+                    </p>
                   </div>
                   <svg
                     width="22"
@@ -206,7 +408,7 @@ const HomePage = () => {
                 <div className="desc-section">
                   <div className="desc">
                     <h4 className="text-md-bold">Phone number</h4>
-                    <p className="text-md-regular">+375(29)9239003</p>
+                    <p className="text-md-regular">{roomActive.phone}</p>
                   </div>
                 </div>
                 <div className="divider" />
@@ -215,6 +417,11 @@ const HomePage = () => {
           )}
         </main>
       </div>
+      <TransitionsModal
+        showModal={showModal}
+        openModal={openModal}
+        closeModal={closeModal}
+      />
     </StyledHomepage>
   );
 };
@@ -225,6 +432,7 @@ const StyledEmptyChat = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  height: 100vh;
   p {
     font-family: Rubik;
     font-style: normal;
@@ -289,8 +497,13 @@ const StyledChatRoom = styled.div`
         img {
           width: 100%;
           height: 100%;
-          object-fit: contain;
+          object-fit: cover;
           border-radius: 20px;
+        }
+      }
+      .desc {
+        p {
+          margin-top: 4px;
         }
       }
     }
@@ -306,18 +519,43 @@ const StyledChatRoom = styled.div`
 
   .chat-section {
     padding: 0 50px;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
+    /* flex: 1; */
     padding-bottom: 150px;
-    gap: 1rem;
+    padding-top: 130px;
+    overflow-y: scroll;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* Internet Explorer 10+ */
+    height: 100%;
+    &::-webkit-scrollbar {
+      /* WebKit */
+      width: 0;
+      height: 0;
+    }
+    .display {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      gap: 1rem;
+    }
+
     .chat {
       display: flex;
-      gap: 15px;
+      .box {
+        display: flex;
+        gap: 15px;
+        .message-wrapper {
+          display: flex;
+          gap: 10px;
+          .time {
+            color: #bebebe;
+            font-size: 14px;
+            margin-top: 6px;
+          }
+        }
+      }
       .message {
         max-width: 350px;
-        padding: 10px 33px;
+        padding: 20px 33px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -329,8 +567,11 @@ const StyledChatRoom = styled.div`
       }
       &.others {
         display: flex;
-        flex-direction: row;
-
+        .box {
+          flex-direction: row-reverse;
+          display: flex;
+          justify-content: start;
+        }
         .message {
           background: #7e98df;
           border-radius: 35px 35px 35px 10px;
@@ -340,10 +581,13 @@ const StyledChatRoom = styled.div`
       &.me {
         display: flex;
         justify-content: flex-end;
-
-        .message {
-          background: #ffffff;
-          border-radius: 35px 10px 35px 35px;
+        .message-wrapper {
+          display: flex;
+          flex-direction: row-reverse;
+          .message {
+            background: #ffffff;
+            border-radius: 35px 10px 35px 35px;
+          }
         }
       }
       img {
@@ -352,7 +596,7 @@ const StyledChatRoom = styled.div`
         `}
         height: 64px;
         width: 64px;
-        object-fit: contain;
+        object-fit: cover;
         border-radius: 20px;
       }
     }
@@ -394,6 +638,9 @@ const StyledChatRoom = styled.div`
         gap: 22px;
       }
     }
+  }
+  .online {
+    color: #00b900 !important;
   }
 `;
 
@@ -438,6 +685,9 @@ const StyledContactInfo = styled.div`
       display: flex;
       flex-direction: column;
       gap: 8px;
+      .online {
+        color: #00b900 !important;
+      }
     }
   }
   .divider {

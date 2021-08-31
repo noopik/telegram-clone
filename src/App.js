@@ -9,7 +9,7 @@ import { persistor, store } from './redux/store';
 
 function App() {
   // useEffect(() => {
-  //   const socket = io('http://localhost:4000');
+  //   const socket = io('http://localhost:3030');
   //   console.log(socket);
   // }, []);
   return (
