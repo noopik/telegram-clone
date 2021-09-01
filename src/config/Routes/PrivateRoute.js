@@ -1,8 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
 import { Redirect, Route } from 'react-router-dom';
-import apiAdapter from '../../config/apiAdapter';
-import { dispatchTypes, toastify } from '../../utils';
 import io from 'socket.io-client';
 
 const PrivateRoute = ({ component: Component, ...rest }) => {

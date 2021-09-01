@@ -13,8 +13,10 @@ import IC_Plus from './IC_Plus.svg';
 import IC_Box from './IC_box.svg';
 import IC_Face from './IC_Face.svg';
 import IC_logout from './IC_logout.svg';
+import IC_Trash from './delete.svg';
 
 export {
+  IC_Trash,
   IC_Plus,
   IC_Box,
   IC_Face,

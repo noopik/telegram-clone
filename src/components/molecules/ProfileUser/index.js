@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import {
@@ -11,9 +11,74 @@ import {
   IC_List,
   IC_Lock,
   IC_Monitor,
+  IC_Trash,
 } from '../../../assets';
 import { apiAdapter } from '../../../config';
 import { dispatchTypes, patternNumber, toastify } from '../../../utils';
+import { makeStyles } from '@material-ui/core/styles';
+import Modal from '@material-ui/core/Modal';
+import Backdrop from '@material-ui/core/Backdrop';
+import Fade from '@material-ui/core/Fade';
+
+// Styling modal
+const useStyles = makeStyles((theme) => ({
+  modal: {
+    display: 'flex',
+    alignItems: 'flex-start',
+    justifyContent: 'center',
+    marginTop: 60,
+  },
+  paper: {
+    backgroundColor: theme.palette.background.paper,
+    boxShadow: theme.shadows[5],
+    padding: theme.spacing(2, 4, 3),
+    borderRadius: 20,
+    width: 500,
+  },
+}));
+const StyledModalContent = styled.div`
+  h2 {
+    text-align: center;
+    font-family: Rubik;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 22px;
+    line-height: 26px;
+    color: #232323;
+    margin-bottom: 1rem;
+  }
+  p {
+    font-family: Rubik;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 17px;
+    line-height: 20px;
+    text-align: center;
+    margin-bottom: 1rem;
+    color: #232323;
+  }
+  .actions {
+    display: flex;
+    gap: 1rem;
+    .btn {
+      padding: 15px 0;
+      border: 0;
+      border-radius: 15px;
+      flex: 1;
+      font-family: Rubik;
+      font-size: 16px;
+      color: #232323;
+      &:hover {
+        cursor: pointer;
+        opacity: 0.5;
+      }
+      &.delete {
+        background-color: #7e98df;
+        color: #ffffff;
+      }
+    }
+  }
+`;
 
 const ProfileUser = ({ username, avatar, phone, biography, idUser }) => {
   // const [updatePhone, setUpdatePhone] = useState(false);
@@ -30,6 +95,40 @@ const ProfileUser = ({ username, avatar, phone, biography, idUser }) => {
     formState: { errors },
   } = useForm();
   const token = localStorage.getItem('token');
+  const userState = useSelector((state) => state.userReducer);
+
+  // START = MODAL DELETE ACCOUNT
+  const classes = useStyles();
+  const [open, setOpen] = useState(false);
+
+  const handleOpenModal = () => {
+    setOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setOpen(false);
+  };
+
+  const actionDeleteAccount = () => {
+    apiAdapter
+      .delete(`/users/${userState.idUser}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res) => {
+        console.log(res);
+        toastify('Success delete account');
+        dispatch({ type: dispatchTypes.setUserLogout });
+        localStorage.removeItem('token');
+        router.replace('/auth/login');
+      })
+      .catch((err) => {
+        console.log(err.response);
+        toastify(err.response?.message);
+      });
+  };
+
+  // END = MODAL DELETE ACCOUNT
+
   // START = UPDATE PHONE
   const handleAvatar = () => {
     const selectAvatar = getValues('avatar')[0];
@@ -46,6 +145,7 @@ const ProfileUser = ({ username, avatar, phone, biography, idUser }) => {
           headers: { Authorization: `Bearer ${token}` },
         })
         .then((res) => {
+          console.log('res success', res);
           const updateAvatar = res.data.data.avatar;
           dispatch({ type: dispatchTypes.setUserAvatar, value: updateAvatar });
           reset();
@@ -165,13 +265,15 @@ const ProfileUser = ({ username, avatar, phone, biography, idUser }) => {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => {
+        console.log('res success', res);
+
         const biography = res.data.data.biography;
         setBioSubmit(false);
         dispatch({ type: dispatchTypes.setUserBiography, value: biography });
         return toastify('Succes update biography', 'right');
       })
       .catch((err) => {
-        // console.log('ERR', err.response);
+        console.log('ERR', err.response);
         const message = err.response?.data.message;
         setBioSubmit(false);
 
@@ -315,7 +417,7 @@ const ProfileUser = ({ username, avatar, phone, biography, idUser }) => {
           </div>
           <div className="row">
             <img src={IC_Lock} alt="icon" />
-            <p className="text-md-regular">Privaty and Security</p>
+            <p className="text-md-regular">Privacy and Security</p>
           </div>
           <div className="row">
             <img src={IC_Graph} alt="icon" />
@@ -329,9 +431,47 @@ const ProfileUser = ({ username, avatar, phone, biography, idUser }) => {
             <img src={IC_Monitor} alt="icon" />
             <p className="text-md-regular">Devices</p>
           </div>
+          <div className="row delete-action" onClick={handleOpenModal}>
+            <img src={IC_Trash} alt="icon" />
+            <p className="text-md-regular">Delete Account</p>
+          </div>
         </div>
         <div className="divider" />
       </div>
+      <Modal
+        aria-labelledby="transition-modal-title"
+        aria-describedby="transition-modal-description"
+        className={classes.modal}
+        open={open}
+        onClose={handleCloseModal}
+        closeAfterTransition
+        BackdropComponent={Backdrop}
+        BackdropProps={{
+          timeout: 500,
+        }}
+      >
+        <Fade in={open}>
+          <div className={classes.paper}>
+            <StyledModalContent>
+              <h2 id="transition-modal-title">
+                Are you sure you want to delete your account?
+              </h2>
+              <p id="transition-modal-description">
+                After you delete account then all chat history and contact list
+                will be deleted permanently.
+              </p>
+              <div className="actions">
+                <button className="btn" onClick={handleCloseModal}>
+                  Cancel
+                </button>
+                <button className="btn delete" onClick={actionDeleteAccount}>
+                  Delete Now
+                </button>
+              </div>
+            </StyledModalContent>
+          </div>
+        </Fade>
+      </Modal>
     </StyledProfileUser>
   );
 };
@@ -483,6 +623,13 @@ const StyledProfileUser = styled.div`
       gap: 1rem;
       align-items: center;
       margin-bottom: 1rem;
+      &.delete-action {
+        color: red;
+      }
+      &:hover {
+        cursor: pointer;
+        opacity: 0.5;
+      }
     }
   }
   .button-add-phone {

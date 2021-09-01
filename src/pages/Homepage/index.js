@@ -106,6 +106,7 @@ const HomePage = ({ socket }) => {
 
   useEffect(() => {
     if (Object.keys(roomActive).length > 1 && socket) {
+      console.log('run 1');
       socket.on('sendMsgFromServer', (data) => {
         console.log('data sendMsgFromServer:', data);
         if (data.idSender === roomActive.idUser) {

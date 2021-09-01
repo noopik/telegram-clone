@@ -76,7 +76,7 @@ const Dashboard = ({ addContactAction }) => {
   // START = DATA HISTORY SEMENTARA
   useEffect(() => {
     apiAdapter
-      .get(`/users`, {
+      .get(`/users?limit=100`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => {
