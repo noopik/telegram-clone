@@ -66,10 +66,10 @@ const HomePage = ({ socket }) => {
   const {
     register,
     handleSubmit,
-    watch,
+    // watch,
     getValues,
     reset,
-    formState: { errors },
+    // formState: { errors },
   } = useForm();
 
   // START =  INPUT MESSAGE
@@ -140,10 +140,11 @@ const HomePage = ({ socket }) => {
           console.log(err.response);
         });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [roomActive]);
 
   // END = MESSAGES
-  console.log('socket update', socket);
+  // console.log('socket update', socket);
   return (
     <StyledHomepage>
       <div className="container">

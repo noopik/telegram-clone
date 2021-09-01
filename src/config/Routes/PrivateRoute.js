@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+// import { useSelector } from 'react-redux';
 import { Redirect, Route } from 'react-router-dom';
 import io from 'socket.io-client';
 
 const PrivateRoute = ({ component: Component, ...rest }) => {
   const [isLogin, setIsLogin] = useState({ check: false, result: false });
-  const userState = useSelector((state) => state.userReducer);
+  // const userState = useSelector((state) => state.userReducer);
   const token = localStorage.getItem('token');
   const [socket, setSocket] = useState(null);
 
