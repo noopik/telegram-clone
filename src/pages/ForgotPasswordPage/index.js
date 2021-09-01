@@ -89,7 +89,7 @@ const ForgotPasswordPage = () => {
           </div>
           <Button
             primary
-            disable={handleButtonDisable}
+            // disable={handleButtonDisable}
             onClick={handleSubmit(onSubmit)}
           >
             Send

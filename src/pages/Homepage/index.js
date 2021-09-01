@@ -123,7 +123,7 @@ const HomePage = ({ socket }) => {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
-  // ======= Scrool to Bottom
+  // ======= Scrool to Bottomu
 
   useEffect(() => {
     if (Object.keys(roomActive).length > 1) {
