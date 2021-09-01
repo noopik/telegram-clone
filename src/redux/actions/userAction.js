@@ -1,16 +1,19 @@
 import { apiAdapter } from '../../config';
 import { dispatchTypes } from '../../utils';
 
-export const roomActiveAction = (token, idRoom) => (dispatch) => {
-  console.log('idRoom', idRoom);
+export const logoutAction = (token, idUser) => (dispatch) => {
+  localStorage.removeItem('token');
+
+  const dataUpdate = {
+    status: 'offline',
+  };
 
   apiAdapter
-    .get(`/users/${idRoom}`, {
+    .patch(`/users/${idUser}`, dataUpdate, {
       headers: { Authorization: `Bearer ${token}` },
     })
     .then((res) => {
-      const resData = res.data.data[0];
-      dispatch({ type: dispatchTypes.setRoomActive, value: resData });
+      dispatch({ type: dispatchTypes.setUserLogout });
     })
     .catch((err) => {
       console.log(err.response);

@@ -17,7 +17,6 @@ import moment from 'moment';
 
 const HomePage = ({ socket }) => {
   moment.locale('id');
-  const { HOST_SOCKET } = process.env;
   let { path } = useRouteMatch();
   const userState = useSelector((state) => state.userReducer);
   const roomActive = useSelector((state) => state.roomActiveReducer);
@@ -25,6 +24,45 @@ const HomePage = ({ socket }) => {
   const [showContactInfo, setShowContactInfo] = useState(false);
   const token = localStorage.getItem('token');
   const messagesEndRef = useRef(null);
+
+  useEffect(() => {
+    document.title = `${userState.name} | Telegram`;
+    console.log('starting message');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    // Object.keys(roomActive).length  > 1
+    if (roomActive && socket) {
+      // document.title = `${userState.name} | Telegram 1`;
+      socket.off('sendMsgFromServer');
+      socket.on('sendMsgFromServer', (data) => {
+        console.log('idSender:', data);
+        console.log('data sendMsgFromServer:', data.idSender);
+        console.log('roomActive.idUser:', roomActive.idUser);
+
+        if (data.idSender === roomActive.idUser) {
+          console.log('idSender', data.idSender);
+          console.log('roomActive.idUser', roomActive.idUser);
+          setMessages((currentValue) => {
+            const update = {
+              bodyMessage: data.body,
+              idSender: data.idSender,
+            };
+            return [...currentValue, update];
+          });
+        } else {
+          return toastify(`${data.nameSender} mengirim pesan`, 'right');
+        }
+      });
+    }
+
+    // socket.on('userOnline', (data) => {
+    //   console.log('userOnline', data);
+    // });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [socket, roomActive]);
+
   const {
     register,
     handleSubmit,
@@ -48,7 +86,7 @@ const HomePage = ({ socket }) => {
           nameSender: userState.name,
         },
         (data) => {
-          console.log('data sendMsgAction', data);
+          // console.log('data sendMsgAction', data);
 
           setMessages((currentValue) => {
             const message = {
@@ -104,26 +142,8 @@ const HomePage = ({ socket }) => {
     }
   }, [roomActive]);
 
-  useEffect(() => {
-    if (Object.keys(roomActive).length > 1 && socket) {
-      console.log('run 1');
-      socket.on('sendMsgFromServer', (data) => {
-        console.log('data sendMsgFromServer:', data);
-        if (data.idSender === roomActive.idUser) {
-          setMessages((currentValue) => {
-            const update = {
-              bodyMessage: data.body,
-              idSender: data.idSender,
-            };
-            return [...currentValue, update];
-          });
-        } else {
-          return toastify(`${data.nameSender} mengirim pesan`, 'right');
-        }
-      });
-    }
-  }, [socket]);
   // END = MESSAGES
+  console.log('socket update', socket);
   return (
     <StyledHomepage>
       <div className="container">
@@ -301,6 +321,7 @@ const HomePage = ({ socket }) => {
                     <input
                       type="text"
                       name="message"
+                      autocomplete="off"
                       placeholder="Type your message.."
                       {...register('message', {
                         required: true,

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
@@ -11,13 +12,12 @@ import {
   IC_Setting,
   IC_Telephone,
 } from '../../../assets';
-import { dispatchTypes } from '../../../utils';
+import { apiAdapter } from '../../../config';
+import { logoutAction } from '../../../redux/actions';
+import { roomActiveAction } from '../../../redux/actions/roomActive';
 import { breakpoints } from '../../../utils/breakpoints';
 import { SearchInput } from '../../atoms';
 import MessageCard from '../MessageCard';
-import { useForm } from 'react-hook-form';
-import { apiAdapter } from '../../../config';
-import { roomActiveAction } from '../../../redux/actions/roomActive';
 
 const Dashboard = ({ addContactAction }) => {
   const router = useHistory();
@@ -161,9 +161,8 @@ const Dashboard = ({ addContactAction }) => {
             </div>
             <div
               className="row"
-              onClick={() => {
-                localStorage.removeItem('token');
-                dispatch({ type: dispatchTypes.setUserLogout });
+              onClick={async () => {
+                await dispatch(logoutAction(token, userState.idUser));
                 return router.replace('/auth/login');
               }}
             >
@@ -212,7 +211,7 @@ const Dashboard = ({ addContactAction }) => {
                 avatar={item.avatar}
                 message={item.phone}
                 onClick={() => {
-                  dispatch(roomActiveAction(item.idUser));
+                  dispatch(roomActiveAction(token, item.idUser));
                 }}
               />
             );

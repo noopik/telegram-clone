@@ -1,17 +1,52 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import { Button, Card, Input } from '../../components/atoms';
 import { AuthLayout } from '../../components/Layout';
-import { breakpoints } from '../../utils';
+import { breakpoints, regexEmailVadidationType, toastify } from '../../utils';
+import { useForm } from 'react-hook-form';
+import { apiAdapter } from '../../config';
 
 const ForgotPasswordPage = () => {
+  const [handleButtonDisable, setHandleButtonDisable] = useState(true);
+
   const router = useHistory();
 
   useEffect(() => {
     document.title = 'Telegram | Forgot Password';
   }, []);
+  const {
+    register,
+    handleSubmit,
+    watch,
+    getValues,
+    formState: { errors },
+  } = useForm();
 
+  useEffect(() => {
+    if (getValues('email')) {
+      setHandleButtonDisable(false);
+    } else {
+      setHandleButtonDisable(true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [watch('email')]);
+
+  const onSubmit = (data) => {
+    console.log('dataPost', data);
+    apiAdapter
+      .post('/users/forgot-password', data)
+      .then((res) => {
+        console.log('res', res);
+        return toastify('Success request. Check your email');
+      })
+      .catch((err) => {
+        console.log('err', err.response);
+        if (err.response?.status === 404) {
+          return toastify(err.response.data.error, 'error');
+        }
+      });
+  };
   return (
     <AuthLayout>
       <Card>
@@ -39,12 +74,26 @@ const ForgotPasswordPage = () => {
           <p className="text-sm-regular wellcome">
             You’ll get messages soon on your e-mail{' '}
           </p>
-          <form>
-            <div className="row">
-              <Input label="Email" id="email" />
-            </div>
-          </form>
-          <Button primary>Send</Button>
+          <div className="row">
+            <Input
+              label="Email"
+              id="email"
+              {...register('email', {
+                required: true,
+                pattern: regexEmailVadidationType,
+              })}
+              error={errors.email ? true : false}
+              errorMessage="Email invalid"
+              ref={null}
+            />
+          </div>
+          <Button
+            primary
+            disable={handleButtonDisable}
+            onClick={handleSubmit(onSubmit)}
+          >
+            Send
+          </Button>
         </StyledLoginPage>
       </Card>
     </AuthLayout>

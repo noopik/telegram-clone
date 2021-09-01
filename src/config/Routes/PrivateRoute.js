@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { Redirect, Route } from 'react-router-dom';
 import io from 'socket.io-client';
 
 const PrivateRoute = ({ component: Component, ...rest }) => {
   const [isLogin, setIsLogin] = useState({ check: false, result: false });
+  const userState = useSelector((state) => state.userReducer);
   const token = localStorage.getItem('token');
   const [socket, setSocket] = useState(null);
 
@@ -25,6 +27,21 @@ const PrivateRoute = ({ component: Component, ...rest }) => {
     setupSocket();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // IN DEVELOPMENT
+  // useEffect(() => {
+  //   if (socket) {
+  //     socket.emit('login', { userId: userState.idUser });
+  //   }
+  // }, [socket]);
+
+  // useEffect(() => {
+  //   if (socket) {
+  //     socket.on('onlineStatus', (data) => {
+  //       console.log('onlineStatus', data);
+  //     });
+  //   }
+  // }, [socket]);
 
   useEffect(() => {
     if (token) {

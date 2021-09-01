@@ -8,7 +8,7 @@ const MessageCard = ({ username, avatar, message, time, onClick }) => {
   return (
     <StyledMessageCard onClick={onClick}>
       <div className="avatar-wrapper">
-        <img src={avatar} alt="user" />
+        <img src={avatar ? avatar : AvatarDefault} alt="user" />
       </div>
       <div className="content-wrapper">
         <div className="body">
