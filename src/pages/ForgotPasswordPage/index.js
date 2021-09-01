@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import { Button, Card, Input } from '../../components/atoms';
 import { AuthLayout } from '../../components/Layout';
-import { breakpoints, regexEmailVadidationType, toastify } from '../../utils';
-import { useForm } from 'react-hook-form';
 import { apiAdapter } from '../../config';
+import { breakpoints, regexEmailVadidationType, toastify } from '../../utils';
 
 const ForgotPasswordPage = () => {
-  const [handleButtonDisable, setHandleButtonDisable] = useState(true);
+  // const [handleButtonDisable, setHandleButtonDisable] = useState(true);
 
   const router = useHistory();
 
@@ -18,19 +18,19 @@ const ForgotPasswordPage = () => {
   const {
     register,
     handleSubmit,
-    watch,
-    getValues,
+    // watch,
+    // getValues,
     formState: { errors },
   } = useForm();
 
-  useEffect(() => {
-    if (getValues('email')) {
-      setHandleButtonDisable(false);
-    } else {
-      setHandleButtonDisable(true);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [watch('email')]);
+  // useEffect(() => {
+  //   if (getValues('email')) {
+  //     // setHandleButtonDisable(false);
+  //   } else {
+  //     // setHandleButtonDisable(true);
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [watch('email')]);
 
   const onSubmit = (data) => {
     console.log('dataPost', data);
