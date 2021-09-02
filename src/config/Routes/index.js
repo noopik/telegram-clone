@@ -1,8 +1,9 @@
 import React from 'react';
-import { BrowserRouter as Router, Switch } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import {
   ForgotPasswordPage,
   HomePage,
+  LandingPage,
   LoginPage,
   RegisterPage,
 } from '../../pages';
@@ -20,7 +21,8 @@ const Routes = () => {
           path="/auth/forgot-password"
           component={ForgotPasswordPage}
         />
-        <PrivateRoute path="/" component={HomePage} />
+        <PrivateRoute exact path="/" component={HomePage} />
+        <Route path="/landing-page" component={LandingPage} />
         {/* <PublicRoute path="/customer-login" component={CustomerLogin} /> */}
         {/* MAIN HOME */}
         {/* <PrivateRoute path="/categories" component={CategoryPage} /> */}

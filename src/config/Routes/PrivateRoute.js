@@ -76,7 +76,7 @@ const PrivateRoute = ({ component: Component, ...rest }) => {
             return isLogin.result ? (
               <Component {...props} socket={socket} />
             ) : (
-              <Redirect to="/auth/login" />
+              <Redirect to="/landing-page" />
             );
           }}
         />
