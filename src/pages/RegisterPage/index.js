@@ -9,14 +9,14 @@ import { breakpoints, regexEmailVadidationType, toastify } from '../../utils';
 
 const RegisterPage = () => {
   const [isShowPassword, setIsShowPasswrod] = useState('password');
-  // const [handleButtonDisable, setHandleButtonDisable] = useState(true);
+  const [handleButtonDisable, setHandleButtonDisable] = useState(true);
   const router = useHistory();
 
   const {
     register,
     handleSubmit,
-    // watch,
-    // getValues,
+    watch,
+    getValues,
     formState: { errors },
   } = useForm();
 
@@ -24,14 +24,14 @@ const RegisterPage = () => {
     document.title = 'Telegram | Register';
   }, []);
 
-  // useEffect(() => {
-  //   if (getValues('name') && getValues('email') && getValues('password')) {
-  //     setHandleButtonDisable(false);
-  //   } else {
-  //     setHandleButtonDisable(true);
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [watch('name'), watch('email'), watch('password')]);
+  useEffect(() => {
+    if (getValues('name') && getValues('email') && getValues('password')) {
+      setHandleButtonDisable(false);
+    } else {
+      setHandleButtonDisable(true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [watch('name'), watch('email'), watch('password')]);
 
   const onSubmit = (data) => {
     // console.log('dataPost', data);
@@ -132,7 +132,7 @@ const RegisterPage = () => {
             </div>
             <Button
               primary
-              // disable={handleButtonDisable}
+              disable={handleButtonDisable}
               onClick={handleSubmit(onSubmit)}
             >
               Register
