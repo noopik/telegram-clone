@@ -59,20 +59,22 @@ export default LandingPage;
 
 // STYLING
 const StyledLandingPage = styled.div`
-  background-color: #7e98df;
   height: 100vh;
 
+  ${breakpoints.lessThan('xsm')`
+      background-color: pink;
+    `}
   .bg-layer {
+    background-color: #7e98df;
+
     position: absolute;
     height: 100vh;
     width: 100%;
     display: flex;
     align-items: flex-end;
     z-index: -1;
-
     img {
       position: absolute;
-      z-index: 1;
       width: 100%;
       height: 80%;
       /* object-fit: cover; */
@@ -194,9 +196,18 @@ const StyledLandingPage = styled.div`
         margin-top: 50px;
         ${breakpoints.lessThan('md')`
             display: flex; 
+            padding: 0 50px;
+        `}
+        ${breakpoints.lessThan('sm')`
+          flex-direction: column; 
         `}
         width: 100%;
+        gap: 1rem;
         button {
+          ${breakpoints.lessThan('sm')`
+              width: 100%;
+          `}
+          margin-left: 0;
           width: 50%;
         }
       }
