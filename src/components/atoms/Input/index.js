@@ -66,7 +66,7 @@ const Input = ({
         defaultValue={defaultValue}
         helperText={error ? errorMessage : null}
         type={type}
-        ref={innerRef}
+        // ref={innerRef}
         {...props}
       />
       <div className="icon" onClick={showPassword}>
