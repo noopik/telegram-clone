@@ -22,8 +22,6 @@ const LoginPage = () => {
   const {
     register,
     handleSubmit,
-    // watch,
-    // getValues,
     formState: { errors },
   } = useForm();
 
