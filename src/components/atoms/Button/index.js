@@ -32,7 +32,7 @@ const Button = ({
       primary={primary}
       outline={outline}
       className={className}
-      onClick={disable ? false : onClick}
+      onClick={onClick}
       disable={disable}
     >
       {icon && icons[icon]}
@@ -50,7 +50,7 @@ Button.propTypes = {
 };
 export default Button;
 
-const StyledButton = styled.div`
+const StyledButton = styled.button`
   border: 0;
   height: 60px;
   border-radius: 70px;

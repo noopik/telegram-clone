@@ -30,6 +30,7 @@ const StyledAuthLayout = styled.div`
   `}
   .children {
     display: flex;
-    height: 700px;
+    /* min-height: 700px; */
+    height: max-content;
   }
 `;
