@@ -9,7 +9,7 @@ const Button = ({
   outline,
   className,
   onClick,
-  disable,
+  disabled,
 }) => {
   const icons = {
     google: (
@@ -33,7 +33,7 @@ const Button = ({
       outline={outline}
       className={className}
       onClick={onClick}
-      disabled={disable}
+      disabled={disabled}
     >
       {icon && icons[icon]}
       <p>{children}</p>
