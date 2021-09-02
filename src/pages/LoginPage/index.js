@@ -15,7 +15,7 @@ import { useDispatch } from 'react-redux';
 
 const LoginPage = () => {
   const [isShowPassword, setIsShowPasswrod] = useState('password');
-  const [handleButtonDisable, setHandleButtonDisable] = useState(true);
+  // const [handleButtonDisable, setHandleButtonDisable] = useState(true);
   const dispatch = useDispatch();
   const router = useHistory();
 
@@ -24,7 +24,6 @@ const LoginPage = () => {
     handleSubmit,
     watch,
     getValues,
-    // reset,
     formState: { errors },
   } = useForm();
 
@@ -57,14 +56,14 @@ const LoginPage = () => {
     document.title = 'Telegram | Login';
   }, []);
 
-  useEffect(() => {
-    if (getValues('email') && getValues('password')) {
-      setHandleButtonDisable(false);
-    } else {
-      setHandleButtonDisable(true);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [watch('email'), watch('password')]);
+  // useEffect(() => {
+  //   if (getValues('email') && getValues('password')) {
+  //     setHandleButtonDisable(false);
+  //   } else {
+  //     setHandleButtonDisable(true);
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [watch('email'), watch('password')]);
 
   return (
     <AuthLayout>
@@ -114,7 +113,7 @@ const LoginPage = () => {
             </div>
             <Button
               primary
-              disable={handleButtonDisable}
+              // disable={handleButtonDisable}
               onClick={handleSubmit(onSubmit)}
             >
               Login

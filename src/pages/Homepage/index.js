@@ -124,7 +124,7 @@ const HomePage = ({ socket }) => {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
-  // ======= Scrool to Bottom
+  // ======= Scrool to Bottomu
 
   useEffect(() => {
     if (Object.keys(roomActive).length > 1) {
@@ -146,7 +146,6 @@ const HomePage = ({ socket }) => {
 
   // END = MESSAGES
 
-  // console.log('path', path);
   return (
     <StyledHomepage>
       <div className="container">
