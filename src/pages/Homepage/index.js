@@ -27,7 +27,7 @@ const HomePage = ({ socket }) => {
 
   useEffect(() => {
     document.title = `${userState.name} | Telegram`;
-    console.log('starting message');
+    // console.log('starting message');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -37,13 +37,13 @@ const HomePage = ({ socket }) => {
       // document.title = `${userState.name} | Telegram 1`;
       socket.off('sendMsgFromServer');
       socket.on('sendMsgFromServer', (data) => {
-        console.log('idSender:', data);
+        // console.log('idSender:', data);
         console.log('data sendMsgFromServer:', data.idSender);
         console.log('roomActive.idUser:', roomActive.idUser);
 
         if (data.idSender === roomActive.idUser) {
-          console.log('idSender', data.idSender);
-          console.log('roomActive.idUser', roomActive.idUser);
+          // console.log('idSender', data.idSender);
+          // console.log('roomActive.idUser', roomActive.idUser);
           setMessages((currentValue) => {
             const update = {
               bodyMessage: data.body,
@@ -51,7 +51,8 @@ const HomePage = ({ socket }) => {
             };
             return [...currentValue, update];
           });
-        } else {
+        } else if (data.idSender !== userState.idUser) {
+          console.log('callback');
           return toastify(`${data.nameSender} mengirim pesan`, 'right');
         }
       });
@@ -66,10 +67,10 @@ const HomePage = ({ socket }) => {
   const {
     register,
     handleSubmit,
-    watch,
+    // watch,
     getValues,
     reset,
-    formState: { errors },
+    // formState: { errors },
   } = useForm();
 
   // START =  INPUT MESSAGE
@@ -86,7 +87,7 @@ const HomePage = ({ socket }) => {
           nameSender: userState.name,
         },
         (data) => {
-          // console.log('data sendMsgAction', data);
+          console.log('data sendMsgAction', data);
 
           setMessages((currentValue) => {
             const message = {
@@ -140,10 +141,10 @@ const HomePage = ({ socket }) => {
           console.log(err.response);
         });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [roomActive]);
 
   // END = MESSAGES
-  console.log('socket update', socket);
   return (
     <StyledHomepage>
       <div className="container">
@@ -156,11 +157,11 @@ const HomePage = ({ socket }) => {
           <Route path={`/profile`}>
             <aside>
               <ProfileUser
-                idUser={userState?.idUser}
+                idUser={userState.idUser}
                 username={userState.name}
                 avatar={userState.avatar}
                 phone={userState.phone}
-                biography={userState?.biography}
+                biography={userState.biography}
               />
             </aside>
           </Route>
@@ -268,12 +269,13 @@ const HomePage = ({ socket }) => {
                                   ? 'me'
                                   : 'others'
                               }`}
+                              key={index}
                             >
                               <div className="box">
                                 <div className="message-wrapper">
                                   <p className="message">{chat.bodyMessage}</p>
                                   <p className="time">
-                                    {moment(chat.createdAt).format('LT')}
+                                    {moment(chat.createdAt).calendar()}
                                   </p>
                                 </div>
                                 <img
@@ -649,7 +651,7 @@ const StyledChatRoom = styled.div`
         font-weight: normal;
         font-size: 16px;
         line-height: 19px;
-        color: #848484;
+        color: #272727;
         background-color: transparent;
         &:focus {
           outline: none;

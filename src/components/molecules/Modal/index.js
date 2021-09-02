@@ -81,9 +81,9 @@ export default function TransitionsModal({ showModal, openModal, closeModal }) {
     register,
     handleSubmit,
     watch,
-    getValues,
+    // getValues,
     reset,
-    formState: { errors },
+    // formState: { errors },
   } = useForm();
 
   // START = SEARCHING ACTION

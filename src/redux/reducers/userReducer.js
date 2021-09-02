@@ -21,6 +21,7 @@ export const userReducer = (state = { initialUser }, action) => {
         name: action.value.name,
         email: action.value.email,
         idUser: action.value.idUser,
+        biography: action.value.biography,
         avatar: action.value.avatar,
         phone: action.value.phone,
         verification: action.value.verification,

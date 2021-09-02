@@ -23,7 +23,7 @@ const Dashboard = ({ addContactAction }) => {
   const router = useHistory();
   const dispatch = useDispatch();
   const token = localStorage.getItem('token');
-  const [resultSearching, setResultSearching] = useState([]);
+  // const [resultSearching, setResultSearching] = useState([]);
   const userState = useSelector((state) => state.userReducer);
   const [history, setHistory] = useState([]);
 
@@ -34,9 +34,9 @@ const Dashboard = ({ addContactAction }) => {
     register,
     handleSubmit,
     watch,
-    getValues,
+    // getValues,
     reset,
-    formState: { errors },
+    // formState: { errors },
   } = useForm();
 
   // START = SEARCHING ACTION
@@ -55,7 +55,7 @@ const Dashboard = ({ addContactAction }) => {
         .catch((err) => {
           // console.log(err.response);
           if (err?.response?.status === 404) {
-            setResultSearching(null);
+            // setResultSearching(null);
           }
         });
     }
@@ -66,7 +66,7 @@ const Dashboard = ({ addContactAction }) => {
       handleSearching();
     } else {
       reset();
-      setResultSearching([]);
+      // setResultSearching([]);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [watch('seaching')]);
@@ -87,7 +87,7 @@ const Dashboard = ({ addContactAction }) => {
       .catch((err) => {
         // console.log(err.response);
         if (err?.response?.status === 404) {
-          setResultSearching(null);
+          // setResultSearching(null);
         }
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
