@@ -61,9 +61,6 @@ export default LandingPage;
 const StyledLandingPage = styled.div`
   height: 100vh;
 
-  ${breakpoints.lessThan('xsm')`
-      background-color: pink;
-    `}
   .bg-layer {
     background-color: #7e98df;
 
