@@ -24,6 +24,7 @@ const LoginPage = () => {
     handleSubmit,
     watch,
     getValues,
+    setValue,
     formState: { errors },
   } = useForm();
 
@@ -57,6 +58,14 @@ const LoginPage = () => {
   }, []);
 
   useEffect(() => {
+    // register({ email: 'email', password: 'password' });
+    // setValue('email', 'password', {
+    //   shouldValidate: true,
+    // });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
     if (getValues('email') && getValues('password')) {
       setHandleButtonDisable(false);
     } else {
@@ -82,7 +91,7 @@ const LoginPage = () => {
                 })}
                 error={errors.email ? true : false}
                 errorMessage="Email invalid"
-                ref={null}
+                // ref={null}
               />
             </div>
             <div className="row">
@@ -100,7 +109,7 @@ const LoginPage = () => {
                 })}
                 error={errors.password ? true : false}
                 errorMessage="Required Password"
-                ref={null}
+                // ref={null}
               />
             </div>
             <div className="row">
