@@ -47,7 +47,7 @@ const AccountVerified = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  console.log(decoded);
+  // console.log(decoded);
 
   if (!decoded) {
     toLogin();

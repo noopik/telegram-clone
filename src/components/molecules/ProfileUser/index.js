@@ -115,14 +115,14 @@ const ProfileUser = ({ username, avatar, phone, biography, idUser }) => {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => {
-        console.log(res);
+        // console.log(res);
         toastify('Success delete account');
         dispatch({ type: dispatchTypes.setUserLogout });
         localStorage.removeItem('token');
         router.replace('/auth/login');
       })
       .catch((err) => {
-        console.log(err.response);
+        // console.log(err.response);
         toastify(err.response?.message);
       });
   };
@@ -145,14 +145,14 @@ const ProfileUser = ({ username, avatar, phone, biography, idUser }) => {
           headers: { Authorization: `Bearer ${token}` },
         })
         .then((res) => {
-          console.log('res success', res);
+          // console.log('res success', res);
           const updateAvatar = res.data.data.avatar;
           dispatch({ type: dispatchTypes.setUserAvatar, value: updateAvatar });
           reset();
           return toastify('Succes update image profile', 'right');
         })
         .catch((err) => {
-          console.log('ERR', err.response);
+          // console.log('ERR', err.response);
           const message = err.response?.data.message;
           reset();
           return toastify(message, 'error');
@@ -199,7 +199,7 @@ const ProfileUser = ({ username, avatar, phone, biography, idUser }) => {
         return toastify('Succes update phone number', 'right');
       })
       .catch((err) => {
-        console.log('ERR', err.response);
+        // console.log('ERR', err.response);
         const message = err.response?.data.message;
         if (message.split(' ').shift() === 'Duplicate') {
           return toastify('Phone alredy used', 'error');
@@ -265,7 +265,7 @@ const ProfileUser = ({ username, avatar, phone, biography, idUser }) => {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => {
-        console.log('res success', res);
+        // console.log('res success', res);
 
         const biography = res.data.data.biography;
         setBioSubmit(false);
@@ -273,7 +273,7 @@ const ProfileUser = ({ username, avatar, phone, biography, idUser }) => {
         return toastify('Succes update biography', 'right');
       })
       .catch((err) => {
-        console.log('ERR', err.response);
+        // console.log('ERR', err.response);
         const message = err.response?.data.message;
         setBioSubmit(false);
 

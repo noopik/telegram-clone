@@ -52,7 +52,7 @@ const HomePage = ({ socket }) => {
             return [...currentValue, update];
           });
         } else if (data.idSender !== userState.idUser) {
-          console.log('callback');
+          // console.log('callback');
           return toastify(`${data.nameSender} mengirim pesan`, 'right');
         }
       });
@@ -87,7 +87,7 @@ const HomePage = ({ socket }) => {
           nameSender: userState.name,
         },
         (data) => {
-          console.log('data sendMsgAction', data);
+          // console.log('data sendMsgAction', data);
 
           setMessages((currentValue) => {
             const message = {
@@ -138,7 +138,7 @@ const HomePage = ({ socket }) => {
           setMessages(resData);
         })
         .catch((err) => {
-          console.log(err.response);
+          // console.log(err.response);
         });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -16,6 +16,6 @@ export const logoutAction = (token, idUser) => (dispatch) => {
       dispatch({ type: dispatchTypes.setUserLogout });
     })
     .catch((err) => {
-      console.log(err.response);
+      // console.log(err.response);
     });
 };

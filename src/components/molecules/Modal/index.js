@@ -95,12 +95,12 @@ export default function TransitionsModal({ showModal, openModal, closeModal }) {
           headers: { Authorization: `Bearer ${token}` },
         })
         .then((res) => {
-          console.log(res);
+          // console.log(res);
           const resData = res.data.data;
           setResultSearching(resData);
         })
         .catch((err) => {
-          console.log(err.response);
+          // console.log(err.response);
           if (err?.response?.status === 404) {
             setResultSearching(null);
           }
@@ -136,7 +136,7 @@ export default function TransitionsModal({ showModal, openModal, closeModal }) {
         toastify('Success add contact');
       })
       .catch((err) => {
-        console.log(err.response);
+        // console.log(err.response);
       });
   };
   // END = ADD CONTACT ACTION
