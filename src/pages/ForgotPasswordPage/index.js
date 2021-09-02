@@ -33,15 +33,18 @@ const ForgotPasswordPage = () => {
   // }, [watch('email')]);
 
   const onSubmit = (data) => {
-    console.log('dataPost', data);
+    // console.log('dataPost', data);
     apiAdapter
       .post('/users/forgot-password', data)
       .then((res) => {
-        console.log('res', res);
+        // console.log('res', res);
         return toastify('Success request. Check your email');
       })
       .catch((err) => {
-        console.log('err', err.response);
+        // console.log('err', err.response);
+        if (err.message === 'Network Error') {
+          toastify('Sorry, our server is down :(', 'error');
+        }
         if (err.response?.status === 404) {
           return toastify(err.response.data.error, 'error');
         }

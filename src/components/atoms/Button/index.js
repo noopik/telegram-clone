@@ -32,8 +32,8 @@ const Button = ({
       primary={primary}
       outline={outline}
       className={className}
-      onClick={disable ? false : onClick}
-      disable={disable}
+      onClick={onClick}
+      disabled={disable}
     >
       {icon && icons[icon]}
       <p>{children}</p>
@@ -50,7 +50,7 @@ Button.propTypes = {
 };
 export default Button;
 
-const StyledButton = styled.div`
+const StyledButton = styled.button`
   border: 0;
   height: 60px;
   border-radius: 70px;
@@ -62,13 +62,13 @@ const StyledButton = styled.div`
   justify-content: center;
   align-items: center;
   gap: 15px;
-  background-color: ${({ primary, disable }) => {
-    if (disable) return '#bebebe';
+  background-color: ${({ primary, disabled }) => {
+    if (disabled) return '#bebebe';
     if (primary) return '#7e98df';
     return 'transparent';
   }};
-  color: ${({ primary, outline, disable }) => {
-    if (disable) return '#858585';
+  color: ${({ primary, outline, disabled }) => {
+    if (disabled) return '#858585';
     if (primary) return '#FFFFFF';
     if (outline) return '#7E98DF';
     return 'transparent';
@@ -77,12 +77,12 @@ const StyledButton = styled.div`
     if (outline) return '1px solid #7E98DF';
   }};
   &:hover {
-    opacity: ${({ disable }) => {
-      if (disable) return 1;
+    opacity: ${({ disabled }) => {
+      if (disabled) return 1;
       return 0.7;
     }};
-    cursor: ${({ disable }) => {
-      if (disable) return 'not-allowed';
+    cursor: ${({ disabled }) => {
+      if (disabled) return 'not-allowed';
       return 'pointer';
     }};
   }

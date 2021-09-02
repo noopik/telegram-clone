@@ -51,9 +51,7 @@ const StyledMessageCard = styled.div`
     ${breakpoints.lessThan('lg')` 
       display: none; 
     `}
-    ${breakpoints.lessThan('sm')`
-        display: block; 
-    `}
+
     &:hover {
       cursor: pointer;
     }
@@ -67,9 +65,7 @@ const StyledMessageCard = styled.div`
   .content-wrapper {
     display: flex;
     flex: 1;
-    ${breakpoints.lessThan('sm')` 
-      display: none; 
-    `}
+
     &:hover {
       cursor: pointer;
       opacity: 0.6;

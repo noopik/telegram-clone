@@ -12,19 +12,22 @@ export const StyledHomepage = styled.div`
       width: 100vw; 
     `}
     aside {
-      padding: 40px 30px;
       background-color: #ffffff;
       overflow-y: scroll;
       scrollbar-width: none; /* Firefox */
       -ms-overflow-style: none; /* Internet Explorer 10+ */
       width: 350px;
+
       ${breakpoints.lessThan('lg')` 
         width: 250px; 
       `}
-      ${breakpoints.lessThan('sm')`
+      /* ${breakpoints.lessThan('md')`
+         width: 350px;
+        `} */
+      /* ${breakpoints.lessThan('sm')`
         width: 60px; 
         padding: 40px 16px;
-      `}
+      `} */
       &::-webkit-scrollbar {
         /* WebKit */
         width: 0;

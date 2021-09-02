@@ -44,6 +44,9 @@ const RegisterPage = () => {
       .catch((err) => {
         // console.log('err', err);
         // console.log('err.response', err.response);
+        if (err.message === 'Network Error') {
+          toastify('Sorry, our server is down :(', 'error');
+        }
         if (err.response) {
           const message = err.response.data.error;
           toastify(message);
@@ -151,6 +154,7 @@ export default RegisterPage;
 const StyledLoginPage = styled.div`
   padding: 42px 70px;
   width: 500px;
+  height: max-content;
   display: flex;
   flex-direction: column;
   gap: 35px;

@@ -39,8 +39,10 @@ const LoginPage = () => {
         router.replace('/');
       })
       .catch((err) => {
-        // console.log('err', err);
-        // console.log('err.response', err.response);
+        // console.log('err', err.message);
+        if (err.message === 'Network Error') {
+          toastify('Sorry, our server is down :(', 'error');
+        }
         if (err.response) {
           const message = err.response.data.error;
           toastify(message);

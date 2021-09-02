@@ -42,6 +42,11 @@ export const userReducer = (state = { initialUser }, action) => {
         ...state,
         name: action.value,
       };
+    case dispatchTypes.setUserVerification:
+      return {
+        ...state,
+        verification: action.value,
+      };
     case dispatchTypes.setUserPhone:
       return {
         ...state,
