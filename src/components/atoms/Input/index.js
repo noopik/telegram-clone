@@ -62,6 +62,7 @@ const Input = ({
         error={error}
         id={id}
         label={label}
+        name={id}
         defaultValue={defaultValue}
         helperText={error ? errorMessage : null}
         type={type}
