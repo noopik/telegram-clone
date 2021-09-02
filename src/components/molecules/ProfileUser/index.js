@@ -489,6 +489,8 @@ ProfileUser.defaultProps = {
 export default ProfileUser;
 
 const StyledProfileUser = styled.div`
+  padding: 45px 30px;
+
   .header {
     display: flex;
     margin-bottom: 50px;

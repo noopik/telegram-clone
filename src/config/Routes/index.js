@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import {
+  AccountVerified,
   ForgotPasswordPage,
   HomePage,
   LandingPage,
@@ -21,8 +22,9 @@ const Routes = () => {
           path="/auth/forgot-password"
           component={ForgotPasswordPage}
         />
-        <PrivateRoute exact path="/" component={HomePage} />
         <Route path="/landing-page" component={LandingPage} />
+        <Route path="/users-verified" component={AccountVerified} />
+        <PrivateRoute path="/" component={HomePage} />
         {/* <PublicRoute path="/customer-login" component={CustomerLogin} /> */}
         {/* MAIN HOME */}
         {/* <PrivateRoute path="/categories" component={CategoryPage} /> */}

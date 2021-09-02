@@ -24,7 +24,7 @@ const LoginPage = () => {
     handleSubmit,
     watch,
     getValues,
-    reset,
+    // reset,
     formState: { errors },
   } = useForm();
 

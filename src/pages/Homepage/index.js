@@ -1,19 +1,19 @@
-import React, { useEffect, useState, useRef } from 'react';
+import moment from 'moment';
+import React, { useEffect, useRef, useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { useSelector } from 'react-redux';
 import { Route, Switch, useRouteMatch } from 'react-router-dom';
 import styled from 'styled-components';
-import { AvatarDefault, IC_Box, IC_Face, IC_Plus } from '../../assets';
+import { AvatarDefault, IC_Box } from '../../assets';
 import {
   Dashboard,
   ProfileUser,
   TransitionsModal,
 } from '../../components/molecules';
+import { apiAdapter } from '../../config';
+import { toastify } from '../../utils';
 import { breakpoints } from '../../utils/breakpoints';
 import { StyledHomepage } from './styled';
-import { useForm } from 'react-hook-form';
-import { toastify } from '../../utils';
-import { apiAdapter } from '../../config';
-import moment from 'moment';
 
 const HomePage = ({ socket }) => {
   moment.locale('id');
@@ -38,8 +38,8 @@ const HomePage = ({ socket }) => {
       socket.off('sendMsgFromServer');
       socket.on('sendMsgFromServer', (data) => {
         // console.log('idSender:', data);
-        console.log('data sendMsgFromServer:', data.idSender);
-        console.log('roomActive.idUser:', roomActive.idUser);
+        // console.log('data sendMsgFromServer:', data.idSender);
+        // console.log('roomActive.idUser:', roomActive.idUser);
 
         if (data.idSender === roomActive.idUser) {
           // console.log('idSender', data.idSender);
@@ -145,6 +145,8 @@ const HomePage = ({ socket }) => {
   }, [roomActive]);
 
   // END = MESSAGES
+
+  // console.log('path', path);
   return (
     <StyledHomepage>
       <div className="container">
@@ -331,12 +333,12 @@ const HomePage = ({ socket }) => {
                       })}
                     />
                     <div className="action-button-wrapper">
-                      <div className="icon">
+                      {/* <div className="icon">
                         <img src={IC_Plus} alt="icon" />
                       </div>
                       <div className="icon">
                         <img src={IC_Face} alt="icon" />
-                      </div>
+                      </div> */}
                       <div className="icon">
                         <img src={IC_Box} alt="icon" />
                       </div>
@@ -468,29 +470,13 @@ const StyledEmptyChat = styled.div`
 `;
 
 const StyledMainContent = styled.div`
-  /* ${breakpoints.lessThan('2xl')`
-      background-color: yellow;
-    `}
-  ${breakpoints.lessThan('xl')`
-      background-color: blue;
-    `}
-    ${breakpoints.lessThan('lg')`
-      background-color: cyan;
-    `}
-    ${breakpoints.lessThan('md')`
-      background-color: pink;
-    `}
-    ${breakpoints.lessThan('sm')`
-      background-color: green;
-    `}
-    ${breakpoints.lessThan('xsm')`
-      background-color: pink;
-    `} */
-
   display: flex;
   flex-shrink: 1;
   height: 100vh;
   position: relative;
+  /* ${breakpoints.lessThan('md')`
+    width: 500px;
+  `} */
 `;
 
 const StyledChatRoom = styled.div`
