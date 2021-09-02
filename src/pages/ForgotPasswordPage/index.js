@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
@@ -8,7 +8,7 @@ import { apiAdapter } from '../../config';
 import { breakpoints, regexEmailVadidationType, toastify } from '../../utils';
 
 const ForgotPasswordPage = () => {
-  // const [handleButtonDisable, setHandleButtonDisable] = useState(true);
+  const [handleButtonDisable, setHandleButtonDisable] = useState(true);
 
   const router = useHistory();
 
@@ -18,19 +18,19 @@ const ForgotPasswordPage = () => {
   const {
     register,
     handleSubmit,
-    // watch,
-    // getValues,
+    watch,
+    getValues,
     formState: { errors },
   } = useForm();
 
-  // useEffect(() => {
-  //   if (getValues('email')) {
-  //     // setHandleButtonDisable(false);
-  //   } else {
-  //     // setHandleButtonDisable(true);
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [watch('email')]);
+  useEffect(() => {
+    if (getValues('email')) {
+      setHandleButtonDisable(false);
+    } else {
+      setHandleButtonDisable(true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [watch('email')]);
 
   const onSubmit = (data) => {
     // console.log('dataPost', data);
@@ -72,7 +72,9 @@ const ForgotPasswordPage = () => {
                 fill="#7E98DF"
               />
             </svg>
-            <h3 className="text-md-bold primary text-center">Register</h3>
+            <h3 className="text-md-bold primary text-center">
+              Forgot Password
+            </h3>
           </div>
           <p className="text-sm-regular wellcome">
             You’ll get messages soon on your e-mail{' '}
@@ -92,7 +94,7 @@ const ForgotPasswordPage = () => {
           </div>
           <Button
             primary
-            // disable={handleButtonDisable}
+            disable={handleButtonDisable}
             onClick={handleSubmit(onSubmit)}
           >
             Send
