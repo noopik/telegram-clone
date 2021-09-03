@@ -1,21 +1,12 @@
 import TextField from '@material-ui/core/TextField';
+import { useField } from 'formik';
 import PropTypes from 'prop-types';
 import React from 'react';
 import styled from 'styled-components';
 
-const Input = ({
-  error,
-  label,
-  defaultValue,
-  errorMessage,
-  type,
-  id,
-  showPassword,
-  innerRef,
-  ...props
-}) => {
+const Input = ({ label, errorMessage, type, id, showPassword, ...props }) => {
+  const [field, meta] = useField(props);
   // id = standard-error-helper-text
-
   const Icons = {
     openEye: (
       <svg
@@ -59,14 +50,11 @@ const Input = ({
   return (
     <StyledTextField>
       <TextFieldCustom
-        error={error}
-        id={id}
+        error={meta.touched && meta.error && true}
         label={label}
-        name={id}
-        defaultValue={defaultValue}
-        helperText={error ? errorMessage : null}
+        helperText={meta.touched && meta.error && errorMessage}
         type={type}
-        // ref={innerRef}
+        {...field}
         {...props}
       />
       <div className="icon" onClick={showPassword}>

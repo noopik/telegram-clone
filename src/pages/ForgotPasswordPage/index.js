@@ -1,55 +1,23 @@
-import React, { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { Form, Formik } from 'formik';
+import React, { useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
+import * as Yup from 'yup';
 import { Button, Card, Input } from '../../components/atoms';
 import { AuthLayout } from '../../components/Layout';
 import { apiAdapter } from '../../config';
-import { breakpoints, regexEmailVadidationType, toastify } from '../../utils';
+import { breakpoints, toastify } from '../../utils';
 
 const ForgotPasswordPage = () => {
-  const [handleButtonDisable, setHandleButtonDisable] = useState(true);
-
+  const validate = Yup.object({
+    email: Yup.string().email('Invalid email address').required('Required'),
+  });
   const router = useHistory();
 
   useEffect(() => {
     document.title = 'Telegram | Forgot Password';
   }, []);
-  const {
-    register,
-    handleSubmit,
-    watch,
-    getValues,
-    formState: { errors },
-  } = useForm();
 
-  useEffect(() => {
-    if (getValues('email')) {
-      setHandleButtonDisable(false);
-    } else {
-      setHandleButtonDisable(true);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [watch('email')]);
-
-  const onSubmit = (data) => {
-    // console.log('dataPost', data);
-    apiAdapter
-      .post('/users/forgot-password', data)
-      .then((res) => {
-        // console.log('res', res);
-        return toastify('Success request. Check your email');
-      })
-      .catch((err) => {
-        // console.log('err', err.response);
-        if (err.message === 'Network Error') {
-          toastify('Sorry, our server is down :(', 'error');
-        }
-        if (err.response?.status === 404) {
-          return toastify(err.response.data.error, 'error');
-        }
-      });
-  };
   return (
     <AuthLayout>
       <Card>
@@ -79,8 +47,51 @@ const ForgotPasswordPage = () => {
           <p className="text-sm-regular wellcome">
             You’ll get messages soon on your e-mail{' '}
           </p>
+          <Formik
+            initialValues={{ email: '' }}
+            validationSchema={validate}
+            onSubmit={(values, { setSubmitting, resetForm }) => {
+              apiAdapter
+                .post('/users/forgot-password', values)
+                .then((res) => {
+                  resetForm();
+
+                  return toastify('Success request. Check your email');
+                })
+                .catch((err) => {
+                  // console.log('err', err.response);
+                  if (err.message === 'Network Error') {
+                    toastify('Sorry, our server is down :(', 'error');
+                  }
+                  if (err.response?.status === 404) {
+                    return toastify(err.response.data.error, 'error');
+                  }
+                });
+            }}
+          >
+            {(formik) => (
+              <Form>
+                <div className="row">
+                  <Input
+                    label="Email"
+                    id="email"
+                    name="email"
+                    type="email"
+                    errorMessage="Email invalid"
+                  />
+                </div>
+                <Button
+                  primary
+                  type="submit"
+                  disabled={Object.keys(formik.errors).length > 0}
+                >
+                  Submit
+                </Button>
+              </Form>
+            )}
+          </Formik>
           <div className="row">
-            <Input
+            {/* <Input
               label="Email"
               id="email"
               {...register('email', {
@@ -90,15 +101,15 @@ const ForgotPasswordPage = () => {
               error={errors.email ? true : false}
               errorMessage="Email invalid"
               ref={null}
-            />
+            /> */}
           </div>
-          <Button
+          {/* <Button
             primary
             disable={handleButtonDisable}
             onClick={handleSubmit(onSubmit)}
           >
             Send
-          </Button>
+          </Button> */}
         </StyledLoginPage>
       </Card>
     </AuthLayout>

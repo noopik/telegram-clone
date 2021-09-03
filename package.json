@@ -8,6 +8,7 @@
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
     "axios": "^0.21.1",
+    "formik": "^2.2.9",
     "jsonwebtoken": "^8.5.1",
     "moment": "^2.29.1",
     "prop-types": "^15.7.2",
@@ -26,7 +27,8 @@
     "socket.io-client": "^4.2.0",
     "styled-components": "^5.3.1",
     "styled-media-query": "^2.1.2",
-    "web-vitals": "^1.0.1"
+    "web-vitals": "^1.0.1",
+    "yup": "^0.32.9"
   },
   "scripts": {
     "start": "react-scripts start",
