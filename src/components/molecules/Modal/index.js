@@ -160,7 +160,7 @@ export default function TransitionsModal({ showModal, openModal, closeModal }) {
             <ModalContent>
               {/* <h1>Search Contact</h1> */}
               <form onSubmit={handleSubmit(handleSearching)}>
-                <SearchInput {...register('seaching')} />
+                <SearchInput name="seaching" {...register('seaching')} />
               </form>
               <div className="result-wrapper">
                 {resultSearching &&

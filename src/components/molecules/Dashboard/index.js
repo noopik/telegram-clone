@@ -183,6 +183,7 @@ const Dashboard = ({ addContactAction }) => {
         <div className="search-wrapper">
           <form onSubmit={handleSubmit(handleSearching)}>
             <SearchInput
+              name="seaching"
               className="search-input-wrapper"
               {...register('seaching')}
             />
