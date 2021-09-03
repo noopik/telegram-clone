@@ -9,6 +9,7 @@ const Button = ({
   outline,
   className,
   onClick,
+  type,
   disabled,
 }) => {
   const icons = {
@@ -27,6 +28,7 @@ const Button = ({
       </svg>
     ),
   };
+  // console.log('formik', className);
   return (
     <StyledButton
       primary={primary}
@@ -34,6 +36,7 @@ const Button = ({
       className={className}
       onClick={onClick}
       disabled={disabled}
+      type={type}
     >
       {icon && icons[icon]}
       <p>{children}</p>

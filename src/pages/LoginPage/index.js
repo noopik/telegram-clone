@@ -1,4 +1,4 @@
-import { Formik } from 'formik';
+import { Formik, Form } from 'formik';
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { Link, useHistory } from 'react-router-dom';
@@ -7,11 +7,16 @@ import { Button, Card, DividerAuthSwitch, Input } from '../../components/atoms';
 import { AuthLayout } from '../../components/Layout';
 import { apiAdapter } from '../../config';
 import { breakpoints, dispatchTypes, toastify } from '../../utils';
+import * as Yup from 'yup';
 
 const LoginPage = () => {
   const [isShowPassword, setIsShowPasswrod] = useState('password');
   const dispatch = useDispatch();
   const router = useHistory();
+  const validate = Yup.object({
+    email: Yup.string().email('Invalid email address').required('Required'),
+    password: Yup.string().required('Required'),
+  });
 
   // console.log('errors', errors);
   useEffect(() => {
@@ -26,21 +31,9 @@ const LoginPage = () => {
           <p className="text-sm-regular wellcome">Hi, Welcome back!</p>
           <Formik
             initialValues={{ email: '', password: '' }}
-            validate={(values) => {
-              const errors = {};
-              if (!values.email) {
-                errors.email = 'Required';
-              } else if (
-                !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(values.email)
-              ) {
-                errors.email = 'Invalid email address';
-              }
-              if (!values.password) {
-                errors.password = 'Required';
-              }
-              return errors;
-            }}
+            validationSchema={validate}
             onSubmit={(values, { setSubmitting }) => {
+              // console.log('values', values);
               apiAdapter
                 .post('/users/login', values)
                 .then((res) => {
@@ -67,26 +60,15 @@ const LoginPage = () => {
                 });
             }}
           >
-            {({
-              values,
-              errors,
-              // touched,
-              handleChange,
-              handleBlur,
-              handleSubmit,
-              // isSubmitting,
-            }) => (
-              <form onSubmit={handleSubmit}>
+            {(formik) => (
+              <Form>
                 <div className="row">
                   <Input
                     label="Email"
                     id="email"
                     name="email"
                     type="email"
-                    error={errors.email ? true : false}
                     errorMessage="Email invalid"
-                    onChange={handleChange}
-                    value={values.email}
                   />
                 </div>
                 <div className="row">
@@ -95,10 +77,6 @@ const LoginPage = () => {
                     id="password"
                     name="password"
                     type={isShowPassword}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    value={values.password}
-                    error={errors.password ? true : false}
                     errorMessage="Required Password"
                     showPassword={() =>
                       isShowPassword === 'password'
@@ -117,11 +95,12 @@ const LoginPage = () => {
                 </div>
                 <Button
                   primary
-                  disabled={Object.values(errors).length > 0 ? true : false}
+                  type="submit"
+                  disabled={Object.keys(formik.errors).length > 0}
                 >
                   Submit
                 </Button>
-              </form>
+              </Form>
             )}
           </Formik>
 

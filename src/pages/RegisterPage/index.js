@@ -1,58 +1,26 @@
+import { Form, Formik } from 'formik';
 import React, { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
 import { Link, useHistory } from 'react-router-dom';
 import styled from 'styled-components';
+import * as Yup from 'yup';
 import { Button, Card, DividerAuthSwitch, Input } from '../../components/atoms';
 import { AuthLayout } from '../../components/Layout';
 import { apiAdapter } from '../../config';
-import { breakpoints, regexEmailVadidationType, toastify } from '../../utils';
+import { breakpoints, toastify } from '../../utils';
 
 const RegisterPage = () => {
   const [isShowPassword, setIsShowPasswrod] = useState('password');
-  const [handleButtonDisable, setHandleButtonDisable] = useState(true);
   const router = useHistory();
-
-  const {
-    register,
-    handleSubmit,
-    watch,
-    getValues,
-    formState: { errors },
-  } = useForm();
+  const validate = Yup.object({
+    name: Yup.string().required('Required'),
+    email: Yup.string().email('Invalid email address').required('Required'),
+    password: Yup.string().required('Required'),
+  });
 
   useEffect(() => {
     document.title = 'Telegram | Register';
   }, []);
 
-  useEffect(() => {
-    if (getValues('name') && getValues('email') && getValues('password')) {
-      setHandleButtonDisable(false);
-    } else {
-      setHandleButtonDisable(true);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [watch('name'), watch('email'), watch('password')]);
-
-  const onSubmit = (data) => {
-    // console.log('dataPost', data);
-    apiAdapter
-      .post('/users/register', data)
-      .then(() => {
-        toastify('Register success. Please login');
-        router.replace('/auth/login');
-      })
-      .catch((err) => {
-        // console.log('err', err);
-        // console.log('err.response', err.response);
-        if (err.message === 'Network Error') {
-          toastify('Sorry, our server is down :(', 'error');
-        }
-        if (err.response) {
-          const message = err.response.data.error;
-          toastify(message);
-        }
-      });
-  };
   return (
     <AuthLayout>
       <Card>
@@ -78,66 +46,82 @@ const RegisterPage = () => {
             <h3 className="text-md-bold primary text-center">Register</h3>
           </div>
           <p className="text-sm-regular wellcome">Hi, Welcome back!</p>
-          <form>
-            <div className="row">
-              <Input
-                label="Name"
-                id="name"
-                {...register('name', {
-                  required: true,
-                })}
-                error={errors.name ? true : false}
-                errorMessage="Required name"
-                ref={null}
-              />
-            </div>
-            <div className="row">
-              <Input
-                label="Email"
-                id="email"
-                {...register('email', {
-                  required: true,
-                  pattern: regexEmailVadidationType,
-                })}
-                error={errors.email ? true : false}
-                errorMessage="Email invalid"
-                ref={null}
-              />
-            </div>
-            <div className="row">
-              <Input
-                label="Password"
-                id="password"
-                type={isShowPassword}
-                showPassword={() =>
-                  isShowPassword === 'password'
-                    ? setIsShowPasswrod('text')
-                    : setIsShowPasswrod('password')
-                }
-                {...register('password', {
-                  required: true,
-                })}
-                error={errors.password ? true : false}
-                errorMessage="Required Password"
-                ref={null}
-              />
-            </div>
-            <div className="row">
-              <Link
-                to="/auth/forgot-password"
-                className="text-md-regular anchor forgot-password"
-              >
-                Forgot password?
-              </Link>
-            </div>
-            <Button
-              primary
-              disable={handleButtonDisable}
-              onClick={handleSubmit(onSubmit)}
-            >
-              Register
-            </Button>
-          </form>
+          <Formik
+            initialValues={{ email: '', password: '', name: '' }}
+            validationSchema={validate}
+            onSubmit={(values, { setSubmitting }) => {
+              // console.log('values', values);
+              apiAdapter
+                .post('/users/register', values)
+                .then(() => {
+                  toastify('Register success. Please login');
+                  router.replace('/auth/login');
+                })
+                .catch((err) => {
+                  // console.log('err', err);
+                  // console.log('err.response', err.response);
+                  if (err.message === 'Network Error') {
+                    toastify('Sorry, our server is down :(', 'error');
+                  }
+                  if (err.response) {
+                    const message = err.response.data.error;
+                    toastify(message);
+                  }
+                });
+            }}
+          >
+            {(formik) => (
+              <Form>
+                <div className="row">
+                  <Input
+                    label="Name"
+                    id="name"
+                    name="name"
+                    type="name"
+                    errorMessage="Required name"
+                  />
+                </div>
+                <div className="row">
+                  <Input
+                    label="Email"
+                    id="email"
+                    name="email"
+                    type="email"
+                    errorMessage="Email invalid"
+                  />
+                </div>
+                <div className="row">
+                  <Input
+                    label="Password"
+                    id="password"
+                    name="password"
+                    type={isShowPassword}
+                    errorMessage="Required Password"
+                    showPassword={() =>
+                      isShowPassword === 'password'
+                        ? setIsShowPasswrod('text')
+                        : setIsShowPasswrod('password')
+                    }
+                  />
+                </div>
+                <div className="row">
+                  <Link
+                    to="/auth/forgot-password"
+                    className="text-md-regular anchor forgot-password"
+                  >
+                    Forgot password?
+                  </Link>
+                </div>
+                <Button
+                  primary
+                  type="submit"
+                  disabled={Object.keys(formik.errors).length > 0}
+                >
+                  Register
+                </Button>
+              </Form>
+            )}
+          </Formik>
           <DividerAuthSwitch title="Register with" />
           <Button outline icon="google">
             Google
