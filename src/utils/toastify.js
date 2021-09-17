@@ -4,7 +4,7 @@ export const toastify = (messagge, type) => {
   switch (type) {
     case 'success':
       return toast.success(messagge, {
-        position: 'top-right',
+        position: 'top-center',
         autoClose: 5000,
         hideProgressBar: false,
         closeOnClick: true,
@@ -14,7 +14,7 @@ export const toastify = (messagge, type) => {
       });
     case 'warning':
       return toast.warn(messagge, {
-        position: 'top-right',
+        position: 'top-center',
         autoClose: 5000,
         hideProgressBar: false,
         closeOnClick: true,
@@ -24,7 +24,7 @@ export const toastify = (messagge, type) => {
       });
     case 'error':
       return toast.error(messagge, {
-        position: 'top-right',
+        position: 'top-center',
         autoClose: 5000,
         hideProgressBar: false,
         closeOnClick: true,
@@ -34,7 +34,7 @@ export const toastify = (messagge, type) => {
       });
     case 'right':
       return toast.info(messagge, {
-        position: 'top-right',
+        position: 'top-center',
         autoClose: 5000,
         hideProgressBar: false,
         closeOnClick: true,

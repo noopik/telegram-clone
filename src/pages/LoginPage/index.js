@@ -1,13 +1,13 @@
-import { Formik, Form } from 'formik';
+import { Form, Formik } from 'formik';
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { Link, useHistory } from 'react-router-dom';
 import styled from 'styled-components';
+import * as Yup from 'yup';
 import { Button, Card, DividerAuthSwitch, Input } from '../../components/atoms';
 import { AuthLayout } from '../../components/Layout';
-import { apiAdapter } from '../../config';
-import { breakpoints, dispatchTypes, toastify } from '../../utils';
-import * as Yup from 'yup';
+import { googleAuth, loginUser } from '../../redux/actions/userAction';
+import { breakpoints } from '../../utils';
 
 const LoginPage = () => {
   const [isShowPassword, setIsShowPasswrod] = useState('password');
@@ -15,7 +15,9 @@ const LoginPage = () => {
   const router = useHistory();
   const validate = Yup.object({
     email: Yup.string().email('Invalid email address').required('Required'),
-    password: Yup.string().required('Required'),
+    password: Yup.string()
+      .min(8, 'Password must be at least 8 charaters')
+      .required('Password is required'),
   });
 
   useEffect(() => {
@@ -32,42 +34,34 @@ const LoginPage = () => {
             initialValues={{ email: '', password: '' }}
             validationSchema={validate}
             onSubmit={(values, { setSubmitting }) => {
-              // console.log('values', values);
-              apiAdapter
-                .post('/users/login', values)
-                .then((res) => {
-                  const token = res.data.data.token;
-                  const resData = res.data.data;
-                  // console.log('res data', res.data.data);
-                  dispatch({
-                    type: dispatchTypes.setUserLogin,
-                    value: resData,
-                  });
-                  // console.log('token', token);
-                  localStorage.setItem('token', token);
-                  router.replace('/');
-                })
-                .catch((err) => {
-                  // console.log('err', err.message);
-                  if (err.message === 'Network Error') {
-                    toastify('Sorry, our server is down :(', 'error');
-                  }
-                  if (err.response) {
-                    const message = err.response.data.error;
-                    toastify(message);
-                  }
-                });
+              dispatch(loginUser(values, router));
             }}
           >
-            {(formik) => (
-              <Form>
+            {({
+              values,
+              errors,
+              touched,
+              handleChange,
+              handleBlur,
+              handleSubmit,
+              isValid,
+            }) => (
+              <Form onSubmit={handleSubmit}>
                 <div className="row">
                   <Input
                     label="Email"
                     id="email"
                     name="email"
                     type="email"
-                    errorMessage="Email invalid"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    value={values.email}
+                    errorMessage={
+                      errors.email &&
+                      touched.email &&
+                      errors.email &&
+                      errors.email
+                    }
                   />
                 </div>
                 <div className="row">
@@ -76,7 +70,15 @@ const LoginPage = () => {
                     id="password"
                     name="password"
                     type={isShowPassword}
-                    errorMessage="Required Password"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    value={values.password}
+                    errorMessage={
+                      errors.password &&
+                      touched.password &&
+                      errors.password &&
+                      errors.password
+                    }
                     showPassword={() =>
                       isShowPassword === 'password'
                         ? setIsShowPasswrod('text')
@@ -95,7 +97,11 @@ const LoginPage = () => {
                 <Button
                   primary
                   type="submit"
-                  disabled={Object.keys(formik.errors).length > 0}
+                  disabled={
+                    !isValid ||
+                    (Object.keys(touched).length === 0 &&
+                      touched.constructor === Object)
+                  }
                 >
                   Submit
                 </Button>
@@ -104,7 +110,13 @@ const LoginPage = () => {
           </Formik>
 
           <DividerAuthSwitch title="Login with" />
-          <Button outline icon="google">
+          <Button
+            outline
+            icon="google"
+            onClick={() =>
+              dispatch(googleAuth('Sorry, this features under development'))
+            }
+          >
             Google
           </Button>
           <div className="footer">
