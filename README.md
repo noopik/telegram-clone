@@ -127,4 +127,4 @@ npm start
 ## Contact
 My Email : novidwicahya19@gmail.com
 
-Project Link: [https://github.com/dwinovic/Blanja-ReactJS](https://github.com/dwinovic/Blanja-ReactJS)
+Project Link: [https://github.com/dwinovic/telegram-clone](https://github.com/dwinovic/telegram-clone)
