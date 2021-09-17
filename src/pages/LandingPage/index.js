@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import { IL_BGLandingPage } from '../../assets';
@@ -6,6 +6,10 @@ import { breakpoints } from '../../utils/breakpoints';
 
 const LandingPage = () => {
   const router = useHistory();
+  useEffect(() => {
+    document.title = `Telegram Clone`;
+  }, []);
+
   return (
     <StyledLandingPage>
       <div className="bg-layer">
