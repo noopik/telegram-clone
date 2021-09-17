@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Redirect, Route } from 'react-router-dom';
 import io from 'socket.io-client';
-const { REACT_APP_HOST_SOCKET } = process.env;
 
 const PrivateRoute = ({ component: Component, ...rest }) => {
   // const { HOST_SOCKET } = process.env;
