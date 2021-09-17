@@ -13,7 +13,7 @@ import {
   IC_Telephone,
 } from '../../../assets';
 import { apiAdapter } from '../../../config';
-import { logoutAction } from '../../../redux/actions';
+import { logoutUser } from '../../../redux/actions';
 import { roomActiveAction } from '../../../redux/actions/roomActive';
 import { breakpoints } from '../../../utils/breakpoints';
 import { SearchInput } from '../../atoms';
@@ -170,7 +170,7 @@ const Dashboard = ({ addContactAction }) => {
               <div
                 className="row"
                 onClick={async () => {
-                  await dispatch(logoutAction(token, userState.idUser));
+                  await dispatch(logoutUser(token, userState.idUser));
                   return router.replace('/auth/login');
                 }}
               >

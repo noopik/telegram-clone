@@ -1,12 +1,13 @@
 import { Form, Formik } from 'formik';
 import React, { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { Link, useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import * as Yup from 'yup';
 import { Button, Card, DividerAuthSwitch, Input } from '../../components/atoms';
 import { AuthLayout } from '../../components/Layout';
-import { apiAdapter } from '../../config';
-import { breakpoints, toastify } from '../../utils';
+import { googleAuth, registerUser } from '../../redux/actions/userAction';
+import { breakpoints } from '../../utils';
 
 const RegisterPage = () => {
   const [isShowPassword, setIsShowPasswrod] = useState('password');
@@ -14,8 +15,11 @@ const RegisterPage = () => {
   const validate = Yup.object({
     name: Yup.string().required('Required'),
     email: Yup.string().email('Invalid email address').required('Required'),
-    password: Yup.string().required('Required'),
+    password: Yup.string()
+      .min(8, 'Password must be at least 8 charaters')
+      .required('Password is required'),
   });
+  const dispatch = useDispatch();
 
   useEffect(() => {
     document.title = 'Telegram | Register';
@@ -50,27 +54,18 @@ const RegisterPage = () => {
             initialValues={{ email: '', password: '', name: '' }}
             validationSchema={validate}
             onSubmit={(values, { setSubmitting }) => {
-              // console.log('values', values);
-              apiAdapter
-                .post('/users/register', values)
-                .then(() => {
-                  toastify('Register success. Please login');
-                  router.replace('/auth/login');
-                })
-                .catch((err) => {
-                  // console.log('err', err);
-                  // console.log('err.response', err.response);
-                  if (err.message === 'Network Error') {
-                    toastify('Sorry, our server is down :(', 'error');
-                  }
-                  if (err.response) {
-                    const message = err.response.data.error;
-                    toastify(message);
-                  }
-                });
+              dispatch(registerUser(values, router));
             }}
           >
-            {(formik) => (
+            {({
+              values,
+              errors,
+              touched,
+              handleChange,
+              handleBlur,
+              handleSubmit,
+              isValid,
+            }) => (
               <Form>
                 <div className="row">
                   <Input
@@ -78,7 +73,12 @@ const RegisterPage = () => {
                     id="name"
                     name="name"
                     type="name"
-                    errorMessage="Required name"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    value={values.name}
+                    errorMessage={
+                      errors.name && touched.name && errors.name && errors.name
+                    }
                   />
                 </div>
                 <div className="row">
@@ -87,7 +87,15 @@ const RegisterPage = () => {
                     id="email"
                     name="email"
                     type="email"
-                    errorMessage="Email invalid"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    value={values.email}
+                    errorMessage={
+                      errors.email &&
+                      touched.email &&
+                      errors.email &&
+                      errors.email
+                    }
                   />
                 </div>
                 <div className="row">
@@ -96,7 +104,15 @@ const RegisterPage = () => {
                     id="password"
                     name="password"
                     type={isShowPassword}
-                    errorMessage="Required Password"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    value={values.password}
+                    errorMessage={
+                      errors.password &&
+                      touched.password &&
+                      errors.password &&
+                      errors.password
+                    }
                     showPassword={() =>
                       isShowPassword === 'password'
                         ? setIsShowPasswrod('text')
@@ -115,7 +131,11 @@ const RegisterPage = () => {
                 <Button
                   primary
                   type="submit"
-                  disabled={Object.keys(formik.errors).length > 0}
+                  disabled={
+                    !isValid ||
+                    (Object.keys(touched).length === 0 &&
+                      touched.constructor === Object)
+                  }
                 >
                   Register
                 </Button>
@@ -123,7 +143,13 @@ const RegisterPage = () => {
             )}
           </Formik>
           <DividerAuthSwitch title="Register with" />
-          <Button outline icon="google">
+          <Button
+            outline
+            icon="google"
+            onClick={() =>
+              dispatch(googleAuth('Sorry, this features under development'))
+            }
+          >
             Google
           </Button>
         </StyledLoginPage>

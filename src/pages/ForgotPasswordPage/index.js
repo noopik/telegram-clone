@@ -1,18 +1,20 @@
 import { Form, Formik } from 'formik';
 import React, { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import * as Yup from 'yup';
 import { Button, Card, Input } from '../../components/atoms';
 import { AuthLayout } from '../../components/Layout';
-import { apiAdapter } from '../../config';
-import { breakpoints, toastify } from '../../utils';
+import { forgotPasswordUser } from '../../redux/actions/userAction';
+import { breakpoints } from '../../utils';
 
 const ForgotPasswordPage = () => {
   const validate = Yup.object({
     email: Yup.string().email('Invalid email address').required('Required'),
   });
   const router = useHistory();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     document.title = 'Telegram | Forgot Password';
@@ -51,65 +53,51 @@ const ForgotPasswordPage = () => {
             initialValues={{ email: '' }}
             validationSchema={validate}
             onSubmit={(values, { setSubmitting, resetForm }) => {
-              apiAdapter
-                .post('/users/forgot-password', values)
-                .then((res) => {
-                  resetForm();
-
-                  return toastify('Success request. Check your email');
-                })
-                .catch((err) => {
-                  // console.log('err', err.response);
-                  if (err.message === 'Network Error') {
-                    toastify('Sorry, our server is down :(', 'error');
-                  }
-                  if (err.response?.status === 404) {
-                    return toastify(err.response.data.error, 'error');
-                  }
-                });
+              dispatch(forgotPasswordUser(values, resetForm));
             }}
           >
-            {(formik) => (
-              <Form>
+            {({
+              values,
+              errors,
+              touched,
+              handleChange,
+              handleBlur,
+              handleSubmit,
+              isValid,
+            }) => (
+              <Form onSubmit={handleSubmit}>
                 <div className="row">
                   <Input
                     label="Email"
                     id="email"
                     name="email"
                     type="email"
-                    errorMessage="Email invalid"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    value={values.email}
+                    errorMessage={
+                      errors.email &&
+                      touched.email &&
+                      errors.email &&
+                      errors.email
+                    }
                   />
                 </div>
                 <Button
                   primary
                   type="submit"
-                  disabled={Object.keys(formik.errors).length > 0}
+                  disabled={
+                    !isValid ||
+                    (Object.keys(touched).length === 0 &&
+                      touched.constructor === Object)
+                  }
                 >
                   Submit
                 </Button>
               </Form>
             )}
           </Formik>
-          <div className="row">
-            {/* <Input
-              label="Email"
-              id="email"
-              {...register('email', {
-                required: true,
-                pattern: regexEmailVadidationType,
-              })}
-              error={errors.email ? true : false}
-              errorMessage="Email invalid"
-              ref={null}
-            /> */}
-          </div>
-          {/* <Button
-            primary
-            disable={handleButtonDisable}
-            onClick={handleSubmit(onSubmit)}
-          >
-            Send
-          </Button> */}
+          <div className="row"></div>
         </StyledLoginPage>
       </Card>
     </AuthLayout>
