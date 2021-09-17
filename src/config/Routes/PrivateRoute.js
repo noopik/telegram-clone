@@ -1,20 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import { Redirect, Route } from 'react-router-dom';
 import io from 'socket.io-client';
+const { REACT_APP_HOST_SOCKET } = process.env;
 
 const PrivateRoute = ({ component: Component, ...rest }) => {
-  const { HOST_SOCKET } = process.env;
+  // const { HOST_SOCKET } = process.env;
 
   const [isLogin, setIsLogin] = useState({ check: false, result: false });
   // const userState = useSelector((state) => state.userReducer);
   const token = localStorage.getItem('token');
   const [socket, setSocket] = useState(null);
-
+  console.log('process.env.HOST_SOCKET', REACT_APP_HOST_SOCKET);
   // START = SETUP SOCKET
   const setupSocket = () => {
     if (token && !socket) {
       // const resultSocket = io('http://localhost:3030');
-      const resultSocket = io(HOST_SOCKET, {
+      console.log('run');
+      const resultSocket = io(`http://localhost:3030`, {
         query: {
           token,
         },
@@ -23,7 +25,8 @@ const PrivateRoute = ({ component: Component, ...rest }) => {
       setSocket(resultSocket);
     }
   };
-
+  console.log('socket', socket);
+  console.log('token', token);
   useEffect(() => {
     setupSocket();
     // eslint-disable-next-line react-hooks/exhaustive-deps

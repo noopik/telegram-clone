@@ -1,5 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
@@ -15,6 +15,7 @@ import {
 import { apiAdapter } from '../../../config';
 import { logoutUser } from '../../../redux/actions';
 import { roomActiveAction } from '../../../redux/actions/roomActive';
+import { isBlank } from '../../../utils';
 import { breakpoints } from '../../../utils/breakpoints';
 import { SearchInput } from '../../atoms';
 import MessageCard from '../MessageCard';
@@ -26,25 +27,16 @@ const Dashboard = ({ addContactAction }) => {
   // const [resultSearching, setResultSearching] = useState([]);
   const userState = useSelector((state) => state.userReducer);
   const [history, setHistory] = useState([]);
+  const [keywordSearch, setKeywordSearch] = useState('');
 
   // const [messages, setMessages] = useState([1, 2]);
   const [navbarPopup, setNavbarPopup] = useState(false);
 
-  const {
-    register,
-    handleSubmit,
-    watch,
-    // getValues,
-    reset,
-    // formState: { errors },
-  } = useForm();
-
   // START = SEARCHING ACTION
-  const handleSearching = () => {
-    const keyword = watch('seaching');
-    if (keyword) {
+  const handleSearching = (event) => {
+    if (!isBlank(keywordSearch)) {
       apiAdapter
-        .get(`/users?src=${keyword}`, {
+        .get(`/users?src=${keywordSearch}`, {
           headers: { Authorization: `Bearer ${token}` },
         })
         .then((res) => {
@@ -62,14 +54,11 @@ const Dashboard = ({ addContactAction }) => {
   };
 
   useEffect(() => {
-    if (watch('seaching')?.length > 0) {
+    if (keywordSearch.length > 0) {
       handleSearching();
     } else {
-      reset();
-      // setResultSearching([]);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [watch('seaching')]);
+  }, [keywordSearch]);
 
   // END = SEARCHING ACTION
 
@@ -90,7 +79,6 @@ const Dashboard = ({ addContactAction }) => {
           // setResultSearching(null);
         }
       });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // END = DATA HISTORY SEMENTARA
@@ -181,13 +169,14 @@ const Dashboard = ({ addContactAction }) => {
           )}
         </div>
         <div className="search-wrapper">
-          <form onSubmit={handleSubmit(handleSearching)}>
-            <SearchInput
-              name="seaching"
-              className="search-input-wrapper"
-              {...register('seaching')}
-            />
-          </form>
+          {/* <form onSubmit={handleSearching}> */}
+          <SearchInput
+            name="seaching"
+            className="search-input-wrapper"
+            onChange={(e) => setKeywordSearch(e.target.value)}
+            value={keywordSearch}
+          />
+          {/* </form> */}
           <div className="add-contact" onClick={addContactAction}>
             <svg
               width="23"

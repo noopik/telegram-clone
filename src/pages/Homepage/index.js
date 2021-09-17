@@ -1,6 +1,6 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import moment from 'moment';
 import React, { useEffect, useRef, useState } from 'react';
-import { useForm } from 'react-hook-form';
 import { useSelector } from 'react-redux';
 import { Route, Switch, useRouteMatch } from 'react-router-dom';
 import styled from 'styled-components';
@@ -11,7 +11,7 @@ import {
   TransitionsModal,
 } from '../../components/molecules';
 import { apiAdapter } from '../../config';
-import { toastify } from '../../utils';
+import { isBlank, toastify } from '../../utils';
 import { breakpoints } from '../../utils/breakpoints';
 import { StyledHomepage } from './styled';
 
@@ -24,17 +24,14 @@ const HomePage = ({ socket }) => {
   const [showContactInfo, setShowContactInfo] = useState(false);
   const token = localStorage.getItem('token');
   const messagesEndRef = useRef(null);
+  const [sendMessage, setSendMessage] = useState('');
 
   useEffect(() => {
     document.title = `${userState.name} | Telegram`;
-    // console.log('starting message');
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
-    // Object.keys(roomActive).length  > 1
     if (roomActive && socket) {
-      // document.title = `${userState.name} | Telegram 1`;
       socket.off('sendMsgFromServer');
       socket.on('sendMsgFromServer', (data) => {
         // console.log('idSender:', data);
@@ -61,44 +58,35 @@ const HomePage = ({ socket }) => {
     // socket.on('userOnline', (data) => {
     //   console.log('userOnline', data);
     // });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [socket, roomActive]);
-
-  const {
-    register,
-    handleSubmit,
-    // watch,
-    getValues,
-    reset,
-    // formState: { errors },
-  } = useForm();
 
   // START =  INPUT MESSAGE
 
-  const sendMessageAction = () => {
-    const message = getValues('message');
-    if (socket) {
-      socket.emit(
-        'sendMsgFromClient',
-        {
-          idSender: userState.idUser,
-          idReceiver: roomActive.idUser,
-          body: message,
-          nameSender: userState.name,
-        },
-        (data) => {
-          console.log('data sendMsgAction', data);
-
-          setMessages((currentValue) => {
-            const message = {
-              idSender: userState.idUser,
-              bodyMessage: data.body,
-            };
-            return [...currentValue, message];
-          });
-        }
-      );
-      reset();
+  const sendMessageAction = (event) => {
+    event.preventDefault();
+    if (!isBlank(sendMessage)) {
+      setSendMessage('');
+      if (socket) {
+        socket.emit(
+          'sendMsgFromClient',
+          {
+            idSender: userState.idUser,
+            idReceiver: roomActive.idUser,
+            body: sendMessage,
+            nameSender: userState.name,
+          },
+          (data) => {
+            setMessages((currentValue) => {
+              const message = {
+                idSender: userState.idUser,
+                bodyMessage: data.body,
+              };
+              return [...currentValue, message];
+            });
+          }
+        );
+      }
+    } else {
     }
   };
   // END =  INPUT MESSAGE
@@ -141,7 +129,6 @@ const HomePage = ({ socket }) => {
           // console.log(err.response);
         });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [roomActive]);
 
   // END = MESSAGES
@@ -283,8 +270,16 @@ const HomePage = ({ socket }) => {
                                   className="avatar"
                                   src={
                                     chat.idSender === userState.idUser
-                                      ? userState.avatar
-                                      : roomActive.avatar
+                                      ? `${
+                                          userState.avatar
+                                            ? userState.avatar
+                                            : AvatarDefault
+                                        }`
+                                      : `${
+                                          roomActive.avatar
+                                            ? roomActive.avatar
+                                            : AvatarDefault
+                                        }`
                                   }
                                   alt={userState.name}
                                 />
@@ -317,19 +312,14 @@ const HomePage = ({ socket }) => {
                   </div>
                 </div>
                 <div className="input-section">
-                  <form
-                    onSubmit={handleSubmit(sendMessageAction)}
-                    className="input-wrapper"
-                  >
+                  <form onSubmit={sendMessageAction} className="input-wrapper">
                     <input
                       type="text"
                       name="message"
                       autocomplete="off"
                       placeholder="Type your message.."
-                      {...register('message', {
-                        required: true,
-                        minLength: 1,
-                      })}
+                      onChange={(e) => setSendMessage(e.target.value)}
+                      value={sendMessage}
                     />
                     <div className="action-button-wrapper">
                       {/* <div className="icon">
@@ -338,7 +328,7 @@ const HomePage = ({ socket }) => {
                       <div className="icon">
                         <img src={IC_Face} alt="icon" />
                       </div> */}
-                      <div className="icon">
+                      <div className="icon" onClick={sendMessageAction}>
                         <img src={IC_Box} alt="icon" />
                       </div>
                     </div>
