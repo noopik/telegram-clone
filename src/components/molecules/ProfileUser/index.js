@@ -178,6 +178,7 @@ const ProfileUser = () => {
     }
   }, [biography]);
   // console.log('bioSubmit', bioSubmit);
+  
   const handleBiography = () => {
     if (!biography) {
       return null;

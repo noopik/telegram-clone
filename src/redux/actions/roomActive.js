@@ -11,6 +11,6 @@ export const roomActiveAction = (token, idRoom) => (dispatch) => {
       dispatch({ type: dispatchTypes.setRoomActive, value: resData });
     })
     .catch((err) => {
-      console.log(err.response);
+      // console.log(err.response);
     });
 };

@@ -20,7 +20,6 @@ const LoginPage = () => {
       .required('Password is required'),
   });
 
-  // console.log('errors', errors);
   useEffect(() => {
     document.title = 'Telegram | Login';
   }, []);

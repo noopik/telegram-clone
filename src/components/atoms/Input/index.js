@@ -4,20 +4,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import styled from 'styled-components';
 
-const Input = ({
-  // error,
-  label,
-  // defaultValue,
-  errorMessage,
-  type,
-  id,
-  // name,
-  showPassword,
-  // ref,
-  // onChange,
-  // value,
-  ...props
-}) => {
+const Input = ({ label, errorMessage, type, id, showPassword, ...props }) => {
   const [field, meta] = useField(props);
   // id = standard-error-helper-text
   const Icons = {
