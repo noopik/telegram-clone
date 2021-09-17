@@ -10,7 +10,7 @@ const PrivateRoute = ({ component: Component, ...rest }) => {
   // const userState = useSelector((state) => state.userReducer);
   const token = localStorage.getItem('token');
   const [socket, setSocket] = useState(null);
-  console.log('process.env.HOST_SOCKET', REACT_APP_HOST_SOCKET);
+  // console.log('process.env.HOST_SOCKET', REACT_APP_HOST_SOCKET);
   // START = SETUP SOCKET
   const setupSocket = () => {
     if (token && !socket) {
