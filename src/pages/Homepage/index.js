@@ -18,7 +18,7 @@ import { StyledHomepage } from './styled';
 const HomePage = ({ socket }) => {
   moment.locale('id');
   let { path } = useRouteMatch();
-  const userState = useSelector((state) => state.userReducer);
+  const userState = useSelector((state) => state.userReducer.user);
   const roomActive = useSelector((state) => state.roomActiveReducer);
   const [messages, setMessages] = useState([]);
   const [showContactInfo, setShowContactInfo] = useState(false);
@@ -144,13 +144,7 @@ const HomePage = ({ socket }) => {
           </Route>
           <Route path={`/profile`}>
             <aside>
-              <ProfileUser
-                idUser={userState.idUser}
-                username={userState.name}
-                avatar={userState.avatar}
-                phone={userState.phone}
-                biography={userState.biography}
-              />
+              <ProfileUser />
             </aside>
           </Route>
         </Switch>

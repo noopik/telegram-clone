@@ -45,7 +45,7 @@ const Dashboard = ({ addContactAction }) => {
           setHistory(resData);
         })
         .catch((err) => {
-          // console.log(err.response);
+          console.log(err.response);
           if (err?.response?.status === 404) {
             // setResultSearching(null);
           }
@@ -74,7 +74,7 @@ const Dashboard = ({ addContactAction }) => {
         setHistory(resData);
       })
       .catch((err) => {
-        // console.log(err.response);
+        console.log(err.response);
         if (err?.response?.status === 404) {
           // setResultSearching(null);
         }

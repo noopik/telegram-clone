@@ -15,7 +15,7 @@ const PrivateRoute = ({ component: Component, ...rest }) => {
   const setupSocket = () => {
     if (token && !socket) {
       // const resultSocket = io('http://localhost:3030');
-      console.log('run');
+      // console.log('run');
       const resultSocket = io(`http://localhost:3030`, {
         query: {
           token,
@@ -25,8 +25,6 @@ const PrivateRoute = ({ component: Component, ...rest }) => {
       setSocket(resultSocket);
     }
   };
-  console.log('socket', socket);
-  console.log('token', token);
   useEffect(() => {
     setupSocket();
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -64,6 +64,53 @@ export const googleAuth = (values) => (dispatch) => {
   return toastify(values, 'warning');
 };
 
+export const updateUser = (values, idUser, token) => (dispatch, getState) => {
+  const updateField = Object.keys(values);
+  const userState = getState().userReducer.user;
+
+  let dataUserUpdate = null;
+  if (values?.avatar) {
+    dataUserUpdate = new FormData();
+    dataUserUpdate.append('avatar', values?.avatar);
+  } else {
+    dataUserUpdate = values;
+  }
+
+  apiAdapter
+    .patch(`/users/${idUser}`, dataUserUpdate, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    .then((res) => {
+      if (res.data.data.avatar) {
+        dispatch({
+          type: dispatchTypes.setUpdateUser,
+          value: {
+            ...userState,
+            ...res.data.data,
+          },
+        });
+      } else {
+        dispatch({
+          type: dispatchTypes.setUpdateUser,
+          value: {
+            ...userState,
+            ...values,
+          },
+        });
+      }
+      return toastify(`Success update ${updateField[0]}`);
+    })
+    .catch((err) => {
+      const message = err.response?.data.message;
+      if (values.phone) {
+        if (message.split(' ').shift() === 'Duplicate') {
+          return toastify('Phone alredy used', 'error');
+        }
+      }
+      return toastify(message, 'error');
+    });
+};
+
 export const logoutUser = (token, idUser) => (dispatch) => {
   localStorage.removeItem('token');
 
@@ -79,6 +126,22 @@ export const logoutUser = (token, idUser) => (dispatch) => {
       dispatch({ type: dispatchTypes.setUserLogout });
     })
     .catch((err) => {
-      console.log(err.response);
+      // console.log(err.response);
+    });
+};
+
+export const deleteUser = (token, idUser, router) => (dispatch) => {
+  apiAdapter
+    .delete(`/users/${idUser}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    .then((res) => {
+      toastify('Success delete account');
+      dispatch({ type: dispatchTypes.setUserLogout });
+      localStorage.removeItem('token');
+      router.replace('/auth/login');
+    })
+    .catch((err) => {
+      toastify(err.response?.message);
     });
 };

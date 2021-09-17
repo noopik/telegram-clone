@@ -85,7 +85,7 @@ export default function TransitionsModal({ showModal, openModal, closeModal }) {
           headers: { Authorization: `Bearer ${token}` },
         })
         .then((res) => {
-          console.log(res);
+          // console.log(res);
           const resData = res.data.data;
           setResultSearching(resData);
         })

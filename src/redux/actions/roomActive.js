@@ -2,8 +2,6 @@ import { apiAdapter } from '../../config';
 import { dispatchTypes } from '../../utils';
 
 export const roomActiveAction = (token, idRoom) => (dispatch) => {
-  console.log('idRoom', idRoom);
-
   apiAdapter
     .get(`/users/${idRoom}`, {
       headers: { Authorization: `Bearer ${token}` },
