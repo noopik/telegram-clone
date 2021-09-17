@@ -1,9 +1,15 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+import Backdrop from '@material-ui/core/Backdrop';
+import Fade from '@material-ui/core/Fade';
+import Modal from '@material-ui/core/Modal';
+import { makeStyles } from '@material-ui/core/styles';
+import { useFormik } from 'formik';
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
+import * as Yup from 'yup';
 import {
   AvatarDefault,
   IC_Bell,
@@ -13,12 +19,8 @@ import {
   IC_Monitor,
   IC_Trash,
 } from '../../../assets';
-import { apiAdapter } from '../../../config';
-import { dispatchTypes, patternNumber, toastify } from '../../../utils';
-import { makeStyles } from '@material-ui/core/styles';
-import Modal from '@material-ui/core/Modal';
-import Backdrop from '@material-ui/core/Backdrop';
-import Fade from '@material-ui/core/Fade';
+import { deleteUser, updateUser } from '../../../redux/actions';
+import { phoneRegExp, toastify } from '../../../utils';
 
 // Styling modal
 const useStyles = makeStyles((theme) => ({
@@ -80,205 +82,110 @@ const StyledModalContent = styled.div`
   }
 `;
 
-const ProfileUser = ({ username, avatar, phone, biography, idUser }) => {
-  // const [updatePhone, setUpdatePhone] = useState(false);
-  // const [phoneSubmit, setPhoneSubmit] = useState(false);
+const ProfileUser = () => {
+  const userState = useSelector((state) => state.userReducer.user);
   const [bioSubmit, setBioSubmit] = useState(false);
-  const router = useHistory();
-  const dispatch = useDispatch();
-  const {
-    register,
-    handleSubmit,
-    watch,
-    getValues,
-    reset,
-    formState: { errors },
-  } = useForm();
+  const [avatar, setAvatar] = useState();
+  const [biography, setBiography] = useState(
+    userState?.biography ? userState?.biography : ''
+  );
   const token = localStorage.getItem('token');
-  const userState = useSelector((state) => state.userReducer);
+  const router = useHistory();
+
+  const dispatch = useDispatch();
+
+  const formikPhone = useFormik({
+    enableReinitialize: true,
+    initialValues: {
+      phone: userState.phone || '',
+    },
+    validationSchema: Yup.object({
+      phone: Yup.string()
+        .matches(phoneRegExp, 'Phone number is not valid')
+        .min(11, 'Password must be at least 11 charaters')
+        .max(13, 'Password must be less than 13 charaters'),
+    }),
+    onSubmit: (values) => {
+      dispatch(updateUser(values, userState.idUser, token));
+    },
+  });
+
+  const formikName = useFormik({
+    enableReinitialize: true,
+    initialValues: {
+      name: userState.name || '',
+    },
+    validationSchema: Yup.object({
+      name: Yup.string().required('Name is required'),
+    }),
+    onSubmit: (values) => {
+      dispatch(updateUser(values, userState.idUser, token));
+    },
+  });
 
   // START = MODAL DELETE ACCOUNT
   const classes = useStyles();
   const [open, setOpen] = useState(false);
-
-  const handleOpenModal = () => {
-    setOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setOpen(false);
-  };
-
   const actionDeleteAccount = () => {
-    apiAdapter
-      .delete(`/users/${userState.idUser}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then((res) => {
-        console.log(res);
-        toastify('Success delete account');
-        dispatch({ type: dispatchTypes.setUserLogout });
-        localStorage.removeItem('token');
-        router.replace('/auth/login');
-      })
-      .catch((err) => {
-        console.log(err.response);
-        toastify(err.response?.message);
-      });
+    dispatch(deleteUser(token, userState.idUser, router));
   };
-
   // END = MODAL DELETE ACCOUNT
 
   // START = UPDATE PHONE
   const handleAvatar = () => {
-    const selectAvatar = getValues('avatar')[0];
-    // console.log('selectAvatar', selectAvatar);
-    if (!selectAvatar) {
+    if (!avatar) {
       return null;
-    }
-
-    if (selectAvatar) {
-      const formData = new FormData();
-      formData.append('avatar', selectAvatar);
-      apiAdapter
-        .patch(`/users/${idUser}`, formData, {
-          headers: { Authorization: `Bearer ${token}` },
-        })
-        .then((res) => {
-          console.log('res success', res);
-          const updateAvatar = res.data.data.avatar;
-          dispatch({ type: dispatchTypes.setUserAvatar, value: updateAvatar });
-          reset();
-          return toastify('Succes update image profile', 'right');
-        })
-        .catch((err) => {
-          console.log('ERR', err.response);
-          const message = err.response?.data.message;
-          reset();
-          return toastify(message, 'error');
-        });
+    } else {
+      const userUpdate = {
+        avatar: avatar,
+      };
+      if (
+        avatar.type === 'image/jpeg' ||
+        avatar.type === 'image/jpg' ||
+        avatar.type === 'image/png' ||
+        avatar.type === 'image/gif'
+      ) {
+        if (avatar.size > 1048576 * 2) {
+          toastify(
+            `${avatar.name} | Failed to upload. max size file is 2mb`,
+            'error'
+          );
+        } else {
+          dispatch(updateUser(userUpdate, userState.idUser, token));
+        }
+      } else {
+        toastify(
+          `${avatar.name} |  Failed to upload. Only image is allowed`,
+          'error'
+        );
+      }
     }
   };
 
   useEffect(() => {
-    if (getValues('avatar')) {
+    if (avatar) {
       handleAvatar();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [watch('avatar')]);
+  }, [avatar]);
   // END = UPLOAD AVATAR
-
-  // START = UPDATE PHONE
-  useEffect(() => {
-    // setPhoneSubmit(true);
-    const phoneTrigger = watch('phone');
-    if (phoneTrigger?.length > 0) {
-      // setPhoneSubmit(true);
-    } else {
-      // setPhoneSubmit(false);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [watch('phone')]);
-
-  const handlePhone = () => {
-    const updatePhone = getValues('phone');
-    if (!updatePhone) {
-      return null;
-    }
-    const update = {
-      phone: updatePhone,
-    };
-    apiAdapter
-      .patch(`/users/${idUser}`, update, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then((res) => {
-        const phone = res.data.data.phone;
-        // setPhoneSubmit(false);
-        dispatch({ type: dispatchTypes.setUserPhone, value: phone });
-        return toastify('Succes update phone number', 'right');
-      })
-      .catch((err) => {
-        console.log('ERR', err.response);
-        const message = err.response?.data.message;
-        if (message.split(' ').shift() === 'Duplicate') {
-          return toastify('Phone alredy used', 'error');
-        }
-        // setPhoneSubmit(false);
-
-        return toastify(message, 'error');
-      });
-  };
-  // END = UPDATE PHONE
-
-  // START = UPDATE NAME
-  const handleName = () => {
-    const updateName = getValues('username');
-    if (!updateName) {
-      return null;
-    }
-    const update = {
-      name: updateName,
-    };
-    apiAdapter
-      .patch(`/users/${idUser}`, update, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then((res) => {
-        const phone = res.data.data.name;
-        // setPhoneSubmit(false);
-        dispatch({ type: dispatchTypes.setUserName, value: phone });
-        return toastify('Succes update name', 'right');
-      })
-      .catch((err) => {
-        // console.log('ERR', err.response);
-        const message = err.response?.data.message;
-        // setPhoneSubmit(false);
-
-        return toastify(message, 'error');
-      });
-  };
-  // END = UPDATE NAME
 
   // START = UPDATE BIOGRAPHY
   useEffect(() => {
-    // setPhoneSubmit(true);
-    const bioTrigger = watch('biography');
-    if (bioTrigger) {
+    if (biography) {
       setBioSubmit(true);
     } else {
       setBioSubmit(false);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [watch('biography')]);
+  }, [biography]);
   // console.log('bioSubmit', bioSubmit);
   const handleBiography = () => {
-    const updateBio = getValues('biography');
-    if (!updateBio) {
+    if (!biography) {
       return null;
     }
-    const update = {
-      biography: updateBio,
+    const updateBio = {
+      biography,
     };
-    apiAdapter
-      .patch(`/users/${idUser}`, update, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then((res) => {
-        console.log('res success', res);
-
-        const biography = res.data.data.biography;
-        setBioSubmit(false);
-        dispatch({ type: dispatchTypes.setUserBiography, value: biography });
-        return toastify('Succes update biography', 'right');
-      })
-      .catch((err) => {
-        console.log('ERR', err.response);
-        const message = err.response?.data.message;
-        setBioSubmit(false);
-
-        return toastify(message, 'error');
-      });
+    dispatch(updateUser(updateBio, userState.idUser, token));
   };
   // END = UPDATE BIOGRAPHY
 
@@ -302,97 +209,71 @@ const ProfileUser = ({ username, avatar, phone, biography, idUser }) => {
             fill="#7E98DF"
           />
         </svg>
-        <h3 className="text-md-bold primary text-center">{username}</h3>
+        <h3 className="text-md-bold primary text-center">{userState.name}</h3>
       </div>
       <div className="profile-section">
         <form className="avatar-wrapper">
-          <img src={avatar ? avatar : AvatarDefault} alt={username} />
-          <input type="file" name="avatar" {...register('avatar')} />
+          <img
+            src={userState?.avatar ? userState?.avatar : AvatarDefault}
+            alt={userState.name}
+          />
+          <input
+            type="file"
+            name="avatar"
+            onChange={(e) => setAvatar(e.target.files[0])}
+          />
         </form>
-        <h3 className="fullname">{username}</h3>
-        <p className="username">@{username}</p>
+        <h3 className="fullname">{userState.name}</h3>
+        <p className="username">@{userState.name}</p>
       </div>
       <div className="section">
         <h5 className="heading-lg">Account</h5>
         {/* <p className="subheading">{phone}</p> */}
         <p className="heading-md">Phone Number</p>
-        <form onSubmit={handleSubmit(handlePhone)}>
+        <form onSubmit={formikPhone.handleSubmit}>
           <input
             type="text"
             name="phone"
-            className={`subheading ${errors.phone && 'text-errors'}`}
-            defaultValue={phone}
+            className={`subheading ${
+              formikPhone.errors.phone && 'text-errors'
+            }`}
             placeholder="Your phone number"
-            {...register('phone', {
-              pattern: patternNumber,
-              minLength: 11,
-              maxLength: 13,
-            })}
+            onChange={formikPhone.handleChange}
+            value={formikPhone.values.phone}
           />
-          {errors.phone && <p className="input-errors">Invalid number</p>}
+          {formikPhone.errors.phone && (
+            <p className="input-errors">{formikPhone.errors.phone}</p>
+          )}
         </form>
-        {/* {!phone && (
-          <div
-            to="#"
-            className="anchor primary button-add-phone"
-            onClick={() => {
-              setUpdatePhone(true);
-            }}
-          >
-            Tap to add phone number
-          </div>
-        )}
-        {!phoneSubmit && (
-          <div
-            to="#"
-            className="anchor primary button-add-phone"
-            onClick={() => {
-              setPhoneSubmit(true);
-            }}
-          >
-            Tap to change phone number
-          </div>
-        )}
-        {phoneSubmit && (
-          <div
-            to="#"
-            className="anchor primary button-add-phone"
-            onClick={handlePhone}
-          >
-            Submit
-          </div>
-        )} */}
         <div className="divider" />
       </div>
       <div className="section">
-        {/* <h5 className="heading-md">@{username}</h5> */}
         <p className="heading-md">Name</p>
-
-        <form onSubmit={handleSubmit(handleName)}>
+        <form onSubmit={formikName.handleSubmit}>
           <input
             type="text"
-            name="username"
-            className={`subheading ${errors.username && 'text-errors'}`}
-            defaultValue={username}
-            placeholder="Your username number"
-            {...register('username', {
-              minLength: 4,
-            })}
+            name="name"
+            className={`subheading ${formikName.errors.name && 'text-errors'}`}
+            onChange={formikName.handleChange}
+            value={formikName.values.name}
           />
-          {errors.username && <p className="input-errors">Invalid name</p>}
+          {formikName.errors.name && (
+            <p className="input-errors">{formikName.errors.name}</p>
+          )}
         </form>
         {/* <p className="text-md-regular gray">Username</p> */}
         <div className="divider" />
       </div>
       <div className="section">
         <h5 className="heading-md">Bio</h5>
-        <form onSubmit={handleSubmit(handleBiography)}>
+        <form>
           <textarea
             id="bio"
             name="bio"
             placeholder="Type bio here!"
-            defaultValue={biography}
-            {...register('biography')}
+            defaultValue={userState?.biography}
+            onChange={(e) => setBiography(e.target.value)}
+            // {...register('biography')}
           ></textarea>
           {bioSubmit && (
             <div>
@@ -431,7 +312,7 @@ const ProfileUser = ({ username, avatar, phone, biography, idUser }) => {
             <img src={IC_Monitor} alt="icon" />
             <p className="text-md-regular">Devices</p>
           </div>
-          <div className="row delete-action" onClick={handleOpenModal}>
+          <div className="row delete-action" onClick={() => setOpen(true)}>
             <img src={IC_Trash} alt="icon" />
             <p className="text-md-regular">Delete Account</p>
           </div>
@@ -443,7 +324,7 @@ const ProfileUser = ({ username, avatar, phone, biography, idUser }) => {
         aria-describedby="transition-modal-description"
         className={classes.modal}
         open={open}
-        onClose={handleCloseModal}
+        onClose={() => setOpen(false)}
         closeAfterTransition
         BackdropComponent={Backdrop}
         BackdropProps={{
@@ -461,7 +342,7 @@ const ProfileUser = ({ username, avatar, phone, biography, idUser }) => {
                 will be deleted permanently.
               </p>
               <div className="actions">
-                <button className="btn" onClick={handleCloseModal}>
+                <button className="btn" onClick={() => setOpen(false)}>
                   Cancel
                 </button>
                 <button className="btn delete" onClick={actionDeleteAccount}>
