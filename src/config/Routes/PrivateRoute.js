@@ -15,7 +15,7 @@ const PrivateRoute = ({ component: Component, ...rest }) => {
     if (token && !socket) {
       // const resultSocket = io('http://localhost:3030');
       // console.log('run');
-      const resultSocket = io(`http://localhost:3030`, {
+      const resultSocket = io(`https://telegram-clone-server.herokuapp.com`, {
         query: {
           token,
         },
