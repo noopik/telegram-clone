@@ -24,9 +24,9 @@ const SearchInput = ({ className, ...props }) => {
         />
       </svg>
       <input
-        type="text"
         className="search-input"
         placeholder="Search contact"
+        // {...field}
         {...props}
       />
     </StyledSearchInput>

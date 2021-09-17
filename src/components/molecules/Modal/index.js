@@ -10,6 +10,7 @@ import { useForm } from 'react-hook-form';
 import { apiAdapter } from '../../../config';
 import { useSelector } from 'react-redux';
 import { toastify } from '../../../utils';
+import { Form, Formik } from 'formik';
 
 const useStyles = makeStyles((theme) => ({
   modal: {
@@ -159,9 +160,25 @@ export default function TransitionsModal({ showModal, openModal, closeModal }) {
           <div className={classes.paper}>
             <ModalContent>
               {/* <h1>Search Contact</h1> */}
-              <form onSubmit={handleSubmit(handleSearching)}>
+              {/* <form onSubmit={handleSubmit(handleSearching)}>
                 <SearchInput name="seaching" {...register('seaching')} />
-              </form>
+              </form> */}
+
+              <Formik
+                initialValues={{ seaching: '' }}
+                onSubmit={(values, { setSubmitting, resetForm }) => {
+                  console.log('VALUES', values);
+                }}
+              >
+                {(formik) => (
+                  <Form>
+                    {/* <SearchInput type="seaching" name="seaching" /> */}
+                    <input type="text" name="seaching" id="seaching" />
+                    {/* <button type="submit">Submit</button> */}
+                  </Form>
+                )}
+              </Formik>
+              <form onSubmit={handleSubmit(handleSearching)}></form>
               <div className="result-wrapper">
                 {resultSearching &&
                   resultSearching.map((person) => {
