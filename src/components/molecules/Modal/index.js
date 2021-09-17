@@ -1,16 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Modal from '@material-ui/core/Modal';
 import Backdrop from '@material-ui/core/Backdrop';
 import Fade from '@material-ui/core/Fade';
-import styled from 'styled-components';
-import { Button, SearchInput } from '../../atoms';
-import { AvatarDefault } from '../../../assets';
-import { useForm } from 'react-hook-form';
-import { apiAdapter } from '../../../config';
+import Modal from '@material-ui/core/Modal';
+import { makeStyles } from '@material-ui/core/styles';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { toastify } from '../../../utils';
-import { Form, Formik } from 'formik';
+import styled from 'styled-components';
+import { AvatarDefault } from '../../../assets';
+import { apiAdapter } from '../../../config';
+import { isBlank, toastify } from '../../../utils';
+import { Button, SearchInput } from '../../atoms';
 
 const useStyles = makeStyles((theme) => ({
   modal: {
@@ -77,22 +75,13 @@ export default function TransitionsModal({ showModal, openModal, closeModal }) {
   const [resultSearching, setResultSearching] = useState([]);
   const classes = useStyles();
   const token = localStorage.getItem('token');
-
-  const {
-    register,
-    handleSubmit,
-    watch,
-    // getValues,
-    reset,
-    // formState: { errors },
-  } = useForm();
+  const [keywordSearch, setKeywordSearch] = useState('');
 
   // START = SEARCHING ACTION
   const handleSearching = () => {
-    const keyword = watch('seaching');
-    if (keyword) {
+    if (!isBlank(keywordSearch)) {
       apiAdapter
-        .get(`/users?src=${keyword}`, {
+        .get(`/users?src=${keywordSearch}`, {
           headers: { Authorization: `Bearer ${token}` },
         })
         .then((res) => {
@@ -110,14 +99,13 @@ export default function TransitionsModal({ showModal, openModal, closeModal }) {
   };
 
   useEffect(() => {
-    if (watch('seaching')?.length > 0) {
+    if (keywordSearch.length > 0) {
       handleSearching();
     } else {
-      reset();
       setResultSearching([]);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [watch('seaching')]);
+  }, [keywordSearch]);
 
   // END = SEARCHING ACTION
 
@@ -160,25 +148,11 @@ export default function TransitionsModal({ showModal, openModal, closeModal }) {
           <div className={classes.paper}>
             <ModalContent>
               {/* <h1>Search Contact</h1> */}
-              {/* <form onSubmit={handleSubmit(handleSearching)}>
-                <SearchInput name="seaching" {...register('seaching')} />
-              </form> */}
-
-              <Formik
-                initialValues={{ seaching: '' }}
-                onSubmit={(values, { setSubmitting, resetForm }) => {
-                  console.log('VALUES', values);
-                }}
-              >
-                {(formik) => (
-                  <Form>
-                    {/* <SearchInput type="seaching" name="seaching" /> */}
-                    <input type="text" name="seaching" id="seaching" />
-                    {/* <button type="submit">Submit</button> */}
-                  </Form>
-                )}
-              </Formik>
-              <form onSubmit={handleSubmit(handleSearching)}></form>
+              <SearchInput
+                name="seaching"
+                onChange={(e) => setKeywordSearch(e.target.value)}
+                value={keywordSearch}
+              />
               <div className="result-wrapper">
                 {resultSearching &&
                   resultSearching.map((person) => {
