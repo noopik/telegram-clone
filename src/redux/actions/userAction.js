@@ -81,16 +81,16 @@ export const updateUser = (values, idUser, token) => (dispatch, getState) => {
   const userState = getState().userReducer.user;
   let dataUserUpdate = null;
   dispatch(loadingAction(true));
+  console.log('values masuk', values);
+
+  dataUserUpdate = new FormData();
   if (values.avatar) {
-    dataUserUpdate = new FormData();
     dataUserUpdate.append('avatar', values.avatar);
-    dataUserUpdate.append('biography', values.biography);
-    dataUserUpdate.append('phone', values.phone);
-    dataUserUpdate.append('name', values.name);
-  } else {
-    delete values.avatar;
-    dataUserUpdate = values;
   }
+  dataUserUpdate.append('biography', values.biography);
+  dataUserUpdate.append('phone', values.phone);
+  dataUserUpdate.append('name', values.name);
+
   apiAdapter
     .patch(`/users/${idUser}`, dataUserUpdate, {
       headers: { Authorization: `Bearer ${token}` },
