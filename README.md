@@ -103,24 +103,19 @@ npm start
 ## Screenshots
 
 <div align="center">
-    <img width="350" src="https://www.bastiaanmulder.nl/wp-content/uploads/2013/11/dummy-image-portrait.jpg">   
-    <img width="350" src="https://www.bastiaanmulder.nl/wp-content/uploads/2013/11/dummy-image-portrait.jpg">
+    <img width="350" src="https://res.cloudinary.com/dnv-images/image/upload/v1631954307/Telegram%20Clone/Preview_TeleClone_-_01_nbx8kq.png">   
+    <img width="350" src="https://res.cloudinary.com/dnv-images/image/upload/v1631954327/Telegram%20Clone/Preview_TeleClone_-_02_btm7ag.png">
 </div>
 <div align="center">
-    <img width="350" src="https://www.bastiaanmulder.nl/wp-content/uploads/2013/11/dummy-image-portrait.jpg">   
-    <img width="350" src="https://www.bastiaanmulder.nl/wp-content/uploads/2013/11/dummy-image-portrait.jpg">
+    <img width="350" src="https://res.cloudinary.com/dnv-images/image/upload/v1631954329/Telegram%20Clone/Preview_TeleClone_-_03_xwvrc1.png">   
+    <img width="350" src="https://res.cloudinary.com/dnv-images/image/upload/v1631954331/Telegram%20Clone/Preview_TeleClone_-_04_fjvj2w.png">
 </div>
 <div align="center">
-    <img width="350" src="https://www.bastiaanmulder.nl/wp-content/uploads/2013/11/dummy-image-portrait.jpg">   
-    <img width="350" src="https://www.bastiaanmulder.nl/wp-content/uploads/2013/11/dummy-image-portrait.jpg">
+    <img width="350" src="https://res.cloudinary.com/dnv-images/image/upload/v1631954333/Telegram%20Clone/Preview_TeleClone_-_05_k9g9dg.png">   
+    <img width="350" src="https://res.cloudinary.com/dnv-images/image/upload/v1631954475/Telegram%20Clone/Preview_TeleClone_-_06_qhch05.png">
 </div>
 <div align="center">
-    <img width="350" src="https://www.bastiaanmulder.nl/wp-content/uploads/2013/11/dummy-image-portrait.jpg">   
-    <img width="350" src="https://www.bastiaanmulder.nl/wp-content/uploads/2013/11/dummy-image-portrait.jpg">
-</div>
-<div align="center">
-    <img width="350" src="https://www.bastiaanmulder.nl/wp-content/uploads/2013/11/dummy-image-portrait.jpg">   
-    <img width="350" src="https://www.bastiaanmulder.nl/wp-content/uploads/2013/11/dummy-image-portrait.jpg">
+    <img width="350" src="https://res.cloudinary.com/dnv-images/image/upload/v1631954338/Telegram%20Clone/Preview_TeleClone_-_07_pg5xkd.png">   
 </div>
 
 ## Contact
