@@ -78,7 +78,6 @@ export const googleAuth = (values) => (dispatch) => {
 };
 
 export const updateUser = (values, idUser, token) => (dispatch, getState) => {
-  // dispatch(loadingAction(true));
   const userState = getState().userReducer.user;
   let dataUserUpdate = null;
   console.log(values);
@@ -119,11 +118,6 @@ export const updateUser = (values, idUser, token) => (dispatch, getState) => {
     })
     .catch((err) => {
       const message = err.response?.data.message;
-      // if (values.phone) {
-      //   if (message.split(' ').shift() === 'Duplicate') {
-      //     return toastify('Phone alredy used', 'error');
-      //   }
-      // }
       dispatch(loadingAction(false));
       return toastify(message, 'error');
     });
