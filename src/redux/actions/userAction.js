@@ -80,7 +80,7 @@ export const googleAuth = (values) => (dispatch) => {
 export const updateUser = (values, idUser, token) => (dispatch, getState) => {
   const userState = getState().userReducer.user;
   let dataUserUpdate = null;
-  console.log(values);
+  dispatch(loadingAction(true));
   if (values.avatar) {
     dataUserUpdate = new FormData();
     dataUserUpdate.append('avatar', values.avatar);
@@ -96,6 +96,7 @@ export const updateUser = (values, idUser, token) => (dispatch, getState) => {
       headers: { Authorization: `Bearer ${token}` },
     })
     .then((res) => {
+      console.log('success update', res);
       if (res.data.data.avatar) {
         dispatch({
           type: dispatchTypes.setUpdateUser,
@@ -117,6 +118,8 @@ export const updateUser = (values, idUser, token) => (dispatch, getState) => {
       return toastify(`Success update Profile`);
     })
     .catch((err) => {
+      console.log('success update', err.response);
+
       const message = err.response?.data.message;
       dispatch(loadingAction(false));
       return toastify(message, 'error');
