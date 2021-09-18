@@ -9,4 +9,5 @@ export const dispatchTypes = {
   setUserPhone: 'SET_USER_PHONE',
   setHistory: 'SET_HISTORY',
   setRoomActive: 'SET_ROOM_ACTIVE',
+  setLoading: 'SET_LOADING',
 };

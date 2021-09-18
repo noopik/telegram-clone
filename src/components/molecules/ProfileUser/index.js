@@ -257,7 +257,9 @@ const ProfileUser = () => {
             formik.errors.biography && (
               <p className="input-errors">{formik.errors.biography}</p>
             )}
-          <button className="anchor primary button-add-phone">Save</button>
+          <button className="anchor primary button-add-phone" type="submit">
+            Save
+          </button>
           <div className="divider" />
         </div>
       </form>
