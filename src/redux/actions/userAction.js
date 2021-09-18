@@ -65,13 +65,15 @@ export const googleAuth = (values) => (dispatch) => {
 };
 
 export const updateUser = (values, idUser, token) => (dispatch, getState) => {
-  const updateField = Object.keys(values);
   const userState = getState().userReducer.user;
 
   let dataUserUpdate = null;
-  if (values?.avatar) {
+  if (values.avatar) {
     dataUserUpdate = new FormData();
-    dataUserUpdate.append('avatar', values?.avatar);
+    dataUserUpdate.append('avatar', values.avatar);
+    dataUserUpdate.append('biography', values.biography);
+    dataUserUpdate.append('phone', values.phone);
+    dataUserUpdate.append('name', values.name);
   } else {
     dataUserUpdate = values;
   }
@@ -98,7 +100,7 @@ export const updateUser = (values, idUser, token) => (dispatch, getState) => {
           },
         });
       }
-      return toastify(`Success update ${updateField[0]}`);
+      return toastify(`Success update Profile`);
     })
     .catch((err) => {
       const message = err.response?.data.message;

@@ -5,7 +5,7 @@ import Modal from '@material-ui/core/Modal';
 import { makeStyles } from '@material-ui/core/styles';
 import { useFormik } from 'formik';
 import PropTypes from 'prop-types';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
@@ -84,42 +84,32 @@ const StyledModalContent = styled.div`
 
 const ProfileUser = () => {
   const userState = useSelector((state) => state.userReducer.user);
-  const [bioSubmit, setBioSubmit] = useState(false);
   const [avatar, setAvatar] = useState();
-  const [biography, setBiography] = useState(
-    userState?.biography ? userState?.biography : ''
-  );
   const token = localStorage.getItem('token');
   const router = useHistory();
 
   const dispatch = useDispatch();
 
-  const formikPhone = useFormik({
+  const formik = useFormik({
     enableReinitialize: true,
     initialValues: {
       phone: userState.phone || '',
+      name: userState.name || '',
+      biography: userState.biography || '',
     },
     validationSchema: Yup.object({
       phone: Yup.string()
+        .required('Phone is required')
         .matches(phoneRegExp, 'Phone number is not valid')
         .min(11, 'Password must be at least 11 charaters')
         .max(13, 'Password must be less than 13 charaters'),
-    }),
-    onSubmit: (values) => {
-      dispatch(updateUser(values, userState.idUser, token));
-    },
-  });
-
-  const formikName = useFormik({
-    enableReinitialize: true,
-    initialValues: {
-      name: userState.name || '',
-    },
-    validationSchema: Yup.object({
       name: Yup.string().required('Name is required'),
+      biography: Yup.string().max(225, 'Maximun 225 character'),
     }),
     onSubmit: (values) => {
-      dispatch(updateUser(values, userState.idUser, token));
+      // console.log('values', { ...values, avatar: avatar });
+      const dataUpdate = { ...values, avatar: avatar };
+      dispatch(updateUser(dataUpdate, userState.idUser, token));
     },
   });
 
@@ -132,63 +122,30 @@ const ProfileUser = () => {
   // END = MODAL DELETE ACCOUNT
 
   // START = UPDATE PHONE
-  const handleAvatar = () => {
-    if (!avatar) {
-      return null;
-    } else {
-      const userUpdate = {
-        avatar: avatar,
-      };
+  const handleAvatar = (fileImage) => {
+    if (fileImage) {
       if (
-        avatar.type === 'image/jpeg' ||
-        avatar.type === 'image/jpg' ||
-        avatar.type === 'image/png' ||
-        avatar.type === 'image/gif'
+        fileImage.type === 'image/jpeg' ||
+        fileImage.type === 'image/jpg' ||
+        fileImage.type === 'image/png' ||
+        fileImage.type === 'image/gif'
       ) {
-        if (avatar.size > 1048576 * 2) {
+        if (fileImage.size > 1048576 * 2) {
           toastify(
-            `${avatar.name} | Failed to upload. max size file is 2mb`,
+            `${fileImage.name} | Failed to upload. max size file is 2mb`,
             'error'
           );
         } else {
-          dispatch(updateUser(userUpdate, userState.idUser, token));
+          setAvatar(fileImage);
         }
       } else {
         toastify(
-          `${avatar.name} |  Failed to upload. Only image is allowed`,
+          `${fileImage.name} |  Failed to upload. Only image is allowed`,
           'error'
         );
       }
     }
   };
-
-  useEffect(() => {
-    if (avatar) {
-      handleAvatar();
-    }
-  }, [avatar]);
-  // END = UPLOAD AVATAR
-
-  // START = UPDATE BIOGRAPHY
-  useEffect(() => {
-    if (biography) {
-      setBioSubmit(true);
-    } else {
-      setBioSubmit(false);
-    }
-  }, [biography]);
-  // console.log('bioSubmit', bioSubmit);
-  
-  const handleBiography = () => {
-    if (!biography) {
-      return null;
-    }
-    const updateBio = {
-      biography,
-    };
-    dispatch(updateUser(updateBio, userState.idUser, token));
-  };
-  // END = UPDATE BIOGRAPHY
 
   return (
     <StyledProfileUser>
@@ -212,84 +169,98 @@ const ProfileUser = () => {
         </svg>
         <h3 className="text-md-bold primary text-center">{userState.name}</h3>
       </div>
-      <div className="profile-section">
-        <form className="avatar-wrapper">
-          <img
-            src={userState?.avatar ? userState?.avatar : AvatarDefault}
-            alt={userState.name}
-          />
-          <input
-            type="file"
-            name="avatar"
-            onChange={(e) => setAvatar(e.target.files[0])}
-          />
-        </form>
-        <h3 className="fullname">{userState.name}</h3>
-        <p className="username">@{userState.name}</p>
-      </div>
-      <div className="section">
-        <h5 className="heading-lg">Account</h5>
-        {/* <p className="subheading">{phone}</p> */}
-        <p className="heading-md">Phone Number</p>
-        <form onSubmit={formikPhone.handleSubmit}>
-          <input
-            type="text"
-            name="phone"
-            className={`subheading ${
-              formikPhone.errors.phone && 'text-errors'
-            }`}
-            placeholder="Your phone number"
-            onChange={formikPhone.handleChange}
-            value={formikPhone.values.phone}
-          />
-          {formikPhone.errors.phone && (
-            <p className="input-errors">{formikPhone.errors.phone}</p>
-          )}
-        </form>
-        <div className="divider" />
-      </div>
-      <div className="section">
-        <p className="heading-md">Name</p>
-        <form onSubmit={formikName.handleSubmit}>
-          <input
-            type="text"
-            name="name"
-            className={`subheading ${formikName.errors.name && 'text-errors'}`}
-            onChange={formikName.handleChange}
-            value={formikName.values.name}
-          />
-          {formikName.errors.name && (
-            <p className="input-errors">{formikName.errors.name}</p>
-          )}
-        </form>
-        {/* <p className="text-md-regular gray">Username</p> */}
-        <div className="divider" />
-      </div>
-      <div className="section">
-        <h5 className="heading-md">Bio</h5>
-        <form>
+      <form onSubmit={formik.handleSubmit}>
+        <div className="profile-section">
+          <div className="avatar-wrapper">
+            <img
+              src={
+                avatar
+                  ? URL.createObjectURL(avatar)
+                  : `${userState?.avatar ? userState?.avatar : AvatarDefault}`
+              }
+              alt={userState.name}
+            />
+            <input
+              type="file"
+              name="avatar"
+              onChange={(e) => handleAvatar(e.target.files[0])}
+            />
+          </div>
+          <h3 className="fullname">{userState.name}</h3>
+          <p className="username">@{userState.name}</p>
+        </div>
+        <div className="section">
+          <h5 className="heading-lg">Account</h5>
+          {/* <p className="subheading">{phone}</p> */}
+          <p className="heading-md">Phone Number</p>
+          <div>
+            <input
+              type="text"
+              name="phone"
+              className={`subheading ${
+                formik.errors.phone &&
+                formik.touched.phone &&
+                formik.errors.phone &&
+                'text-errors'
+              }`}
+              placeholder="Your phone number"
+              onBlur={formik.handleBlur}
+              onChange={formik.handleChange}
+              value={formik.values.phone}
+            />
+            {formik.errors.phone &&
+              formik.touched.phone &&
+              formik.errors.phone && (
+                <p className="input-errors">{formik.errors.phone}</p>
+              )}
+          </div>
+          <div className="divider" />
+        </div>
+        <div className="section">
+          <p className="heading-md">Name</p>
+          <div onSubmit={formik.handleSubmit}>
+            <input
+              type="text"
+              name="name"
+              className={`subheading ${
+                formik.errors.name &&
+                formik.touched.name &&
+                formik.errors.name &&
+                'text-errors'
+              }`}
+              onBlur={formik.handleBlur}
+              onChange={formik.handleChange}
+              value={formik.values.name}
+            />
+            {formik.errors.name &&
+              formik.touched.name &&
+              formik.errors.name && (
+                <p className="input-errors">{formik.errors.name}</p>
+              )}
+          </div>
+          {/* <p className="text-md-regular gray">Username</p> */}
+          <div className="divider" />
+        </div>
+        <div className="section">
+          <h5 className="heading-md">Bio</h5>
+
           <textarea
-            id="bio"
-            name="bio"
-            placeholder="Type bio here!"
-            defaultValue={userState?.biography}
-            onChange={(e) => setBiography(e.target.value)}
-            // {...register('biography')}
+            id="biography"
+            name="biography"
+            placeholder="Type biography here!"
+            onBlur={formik.handleBlur}
+            onChange={formik.handleChange}
+            value={formik.values.biography}
           ></textarea>
-          {bioSubmit && (
-            <div>
-              <div
-                to="#"
-                className="anchor primary button-add-phone"
-                onClick={handleBiography}
-              >
-                Save
-              </div>
-            </div>
-          )}
-        </form>
-        <div className="divider" />
-      </div>
+          {formik.errors.biography &&
+            formik.touched.biography &&
+            formik.errors.biography && (
+              <p className="input-errors">{formik.errors.biography}</p>
+            )}
+          <button className="anchor primary button-add-phone">Save</button>
+          <div className="divider" />
+        </div>
+      </form>
       <div className="section">
         <h5 className="heading-lg">Settings</h5>
         <div className="setting-items">
@@ -517,9 +488,13 @@ const StyledProfileUser = styled.div`
     }
   }
   .button-add-phone {
+    border: 0;
+    background-color: transparent;
+    font: inherit;
     width: max-content;
     &:hover {
       cursor: pointer;
+      font-weight: 600;
     }
   }
 `;
