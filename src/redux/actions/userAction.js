@@ -78,9 +78,10 @@ export const googleAuth = (values) => (dispatch) => {
 };
 
 export const updateUser = (values, idUser, token) => (dispatch, getState) => {
-  dispatch(loadingAction(true));
+  // dispatch(loadingAction(true));
   const userState = getState().userReducer.user;
   let dataUserUpdate = null;
+  console.log(values);
   if (values.avatar) {
     dataUserUpdate = new FormData();
     dataUserUpdate.append('avatar', values.avatar);
@@ -88,9 +89,9 @@ export const updateUser = (values, idUser, token) => (dispatch, getState) => {
     dataUserUpdate.append('phone', values.phone);
     dataUserUpdate.append('name', values.name);
   } else {
+    delete values.avatar;
     dataUserUpdate = values;
   }
-
   apiAdapter
     .patch(`/users/${idUser}`, dataUserUpdate, {
       headers: { Authorization: `Bearer ${token}` },
