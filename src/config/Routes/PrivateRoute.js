@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Redirect, Route } from 'react-router-dom';
 import io from 'socket.io-client';
-const { REACT_APP_HOST_SOCKET } = process.env;
 
 const PrivateRoute = ({ component: Component, ...rest }) => {
   // const { HOST_SOCKET } = process.env;
@@ -10,13 +9,13 @@ const PrivateRoute = ({ component: Component, ...rest }) => {
   // const userState = useSelector((state) => state.userReducer);
   const token = localStorage.getItem('token');
   const [socket, setSocket] = useState(null);
-  console.log('process.env.HOST_SOCKET', REACT_APP_HOST_SOCKET);
+  // console.log('process.env.HOST_SOCKET', REACT_APP_HOST_SOCKET);
   // START = SETUP SOCKET
   const setupSocket = () => {
     if (token && !socket) {
       // const resultSocket = io('http://localhost:3030');
       // console.log('run');
-      const resultSocket = io(`http://localhost:3030`, {
+      const resultSocket = io(`https://telegram-clone-server.herokuapp.com`, {
         query: {
           token,
         },
