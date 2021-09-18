@@ -104,11 +104,11 @@ export const updateUser = (values, idUser, token) => (dispatch, getState) => {
     })
     .catch((err) => {
       const message = err.response?.data.message;
-      if (values.phone) {
-        if (message.split(' ').shift() === 'Duplicate') {
-          return toastify('Phone alredy used', 'error');
-        }
-      }
+      // if (values.phone) {
+      //   if (message.split(' ').shift() === 'Duplicate') {
+      //     return toastify('Phone alredy used', 'error');
+      //   }
+      // }
       return toastify(message, 'error');
     });
 };
