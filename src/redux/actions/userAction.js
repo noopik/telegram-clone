@@ -1,7 +1,10 @@
 import { apiAdapter } from '../../config';
 import { dispatchTypes, toastify } from '../../utils';
+import { loadingAction } from './loadingAction';
 
 export const loginUser = (values, router) => (dispatch) => {
+  dispatch(loadingAction(true));
+
   apiAdapter
     .post('/users/login', values)
     .then((res) => {
@@ -12,9 +15,11 @@ export const loginUser = (values, router) => (dispatch) => {
         value: resData,
       });
       localStorage.setItem('token', token);
+      dispatch(loadingAction(false));
       router.replace('/');
     })
     .catch((err) => {
+      dispatch(loadingAction(false));
       if (err.message === 'Network Error') {
         toastify('Sorry, our server is down :(', 'error');
       }
@@ -26,13 +31,17 @@ export const loginUser = (values, router) => (dispatch) => {
 };
 
 export const registerUser = (values, router) => (dispatch) => {
+  dispatch(loadingAction(true));
+
   apiAdapter
     .post('/users/register', values)
     .then(() => {
       toastify('Register success. Please login');
+      dispatch(loadingAction(false));
       router.replace('/auth/login');
     })
     .catch((err) => {
+      dispatch(loadingAction(false));
       if (err.message === 'Network Error') {
         toastify(`Sorry, our server is down`, 'error');
       }
@@ -44,13 +53,17 @@ export const registerUser = (values, router) => (dispatch) => {
 };
 
 export const forgotPasswordUser = (values, resetForm) => (dispatch) => {
+  dispatch(loadingAction(true));
   apiAdapter
     .post('/users/forgot-password', values)
     .then((res) => {
       resetForm();
+      dispatch(loadingAction(false));
+
       return toastify('Success request. Check your email');
     })
     .catch((err) => {
+      dispatch(loadingAction(false));
       if (err.message === 'Network Error') {
         toastify('Sorry, our server is down :(', 'error');
       }
@@ -65,8 +78,8 @@ export const googleAuth = (values) => (dispatch) => {
 };
 
 export const updateUser = (values, idUser, token) => (dispatch, getState) => {
+  dispatch(loadingAction(true));
   const userState = getState().userReducer.user;
-
   let dataUserUpdate = null;
   if (values.avatar) {
     dataUserUpdate = new FormData();
@@ -91,6 +104,7 @@ export const updateUser = (values, idUser, token) => (dispatch, getState) => {
             ...res.data.data,
           },
         });
+        dispatch(loadingAction(false));
       } else {
         dispatch({
           type: dispatchTypes.setUpdateUser,
@@ -109,13 +123,13 @@ export const updateUser = (values, idUser, token) => (dispatch, getState) => {
       //     return toastify('Phone alredy used', 'error');
       //   }
       // }
+      dispatch(loadingAction(false));
       return toastify(message, 'error');
     });
 };
 
 export const logoutUser = (token, idUser) => (dispatch) => {
   localStorage.removeItem('token');
-
   const dataUpdate = {
     status: 'offline',
   };
@@ -127,12 +141,11 @@ export const logoutUser = (token, idUser) => (dispatch) => {
     .then((res) => {
       dispatch({ type: dispatchTypes.setUserLogout });
     })
-    .catch((err) => {
-      // console.log(err.response);
-    });
+    .catch((err) => {});
 };
 
 export const deleteUser = (token, idUser, router) => (dispatch) => {
+  dispatch(loadingAction(true));
   apiAdapter
     .delete(`/users/${idUser}`, {
       headers: { Authorization: `Bearer ${token}` },
@@ -141,9 +154,11 @@ export const deleteUser = (token, idUser, router) => (dispatch) => {
       toastify('Success delete account');
       dispatch({ type: dispatchTypes.setUserLogout });
       localStorage.removeItem('token');
+      dispatch(loadingAction(false));
       router.replace('/auth/login');
     })
     .catch((err) => {
+      dispatch(loadingAction(false));
       toastify(err.response?.message);
     });
 };
