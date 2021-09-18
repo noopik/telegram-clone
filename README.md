@@ -48,7 +48,6 @@
       </ol>
     </li>
     <li><a href="#screenshots">Screenshots</a></li>
-    <li><a href="#our-team">Our Team</a></li>
     <li><a href="#contact">Contact</a></li>
   </ol>
 </details>
