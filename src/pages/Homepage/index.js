@@ -27,7 +27,7 @@ const HomePage = ({ socket }) => {
   const [sendMessage, setSendMessage] = useState('');
 
   useEffect(() => {
-    document.title = `${userState.name} | Telegram`;
+    document.title = `${userState ? userState?.name : 'Home'} | Telegram`;
   }, []);
 
   useEffect(() => {
@@ -667,6 +667,7 @@ const StyledContactInfo = styled.div`
       height: 84px;
       width: 84px;
       border-radius: 30px;
+      object-fit: cover;
     }
   }
   .desc-section {

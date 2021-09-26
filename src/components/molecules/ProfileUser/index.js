@@ -107,8 +107,10 @@ const ProfileUser = () => {
       biography: Yup.string().max(225, 'Maximun 225 character'),
     }),
     onSubmit: (values) => {
-      // console.log('values', { ...values, avatar: avatar });
-      const dataUpdate = { ...values, avatar: avatar };
+      const dataUpdate = {
+        ...values,
+        avatar: avatar ? avatar : userState.avatar,
+      };
       dispatch(updateUser(dataUpdate, userState.idUser, token));
     },
   });

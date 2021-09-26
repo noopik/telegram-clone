@@ -114,7 +114,7 @@ const LoginPage = () => {
             outline
             icon="google"
             onClick={() =>
-              dispatch(googleAuth('Sorry, this features under development'))
+              dispatch(googleAuth('This features under development'))
             }
           >
             Google
