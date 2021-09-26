@@ -94,7 +94,10 @@ export const updateUser = (values, idUser, token) => (dispatch, getState) => {
   }
   apiAdapter
     .patch(`/users/${idUser}`, dataUserUpdate, {
-      headers: { Authorization: `Bearer ${token}` },
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'multipart/form-data',
+      },
     })
     .then((res) => {
       dispatch(loadingAction(false));
