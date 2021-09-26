@@ -97,30 +97,20 @@ export const updateUser = (values, idUser, token) => (dispatch, getState) => {
       headers: { Authorization: `Bearer ${token}` },
     })
     .then((res) => {
-      console.log('success update', res);
-      if (res.data.data.avatar) {
-        dispatch({
-          type: dispatchTypes.setUpdateUser,
-          value: {
-            ...userState,
-            ...res.data.data,
-          },
-        });
-        dispatch(loadingAction(false));
-      } else {
-        dispatch({
-          type: dispatchTypes.setUpdateUser,
-          value: {
-            ...userState,
-            ...values,
-          },
-        });
-      }
+      dispatch(loadingAction(false));
+      dispatch({
+        type: dispatchTypes.setUpdateUser,
+        value: {
+          ...userState,
+          ...res.data.data,
+        },
+      });
+      // console.log('success update', res);
       return toastify(`Success update Profile`);
     })
     .catch((err) => {
       console.log('success update', err.response);
-
+      dispatch(loadingAction(false));
       const message = err.response?.data.message;
       dispatch(loadingAction(false));
       return toastify(message, 'error');
