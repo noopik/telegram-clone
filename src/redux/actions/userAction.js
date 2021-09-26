@@ -94,10 +94,7 @@ export const updateUser = (values, idUser, token) => (dispatch, getState) => {
   }
   apiAdapter
     .patch(`/users/${idUser}`, dataUserUpdate, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'multipart/form-data',
-      },
+      headers: { Authorization: `Bearer ${token}` },
     })
     .then((res) => {
       dispatch(loadingAction(false));
@@ -108,11 +105,12 @@ export const updateUser = (values, idUser, token) => (dispatch, getState) => {
           ...res.data.data,
         },
       });
-      // console.log('success update', res);
+      console.log('success update', res);
+
       return toastify(`Success update Profile`);
     })
     .catch((err) => {
-      console.log('success update', err.response);
+      console.log('error update', err.response);
       dispatch(loadingAction(false));
       const message = err.response?.data.message;
       dispatch(loadingAction(false));
