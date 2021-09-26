@@ -89,6 +89,7 @@ const ProfileUser = () => {
   const router = useHistory();
 
   const dispatch = useDispatch();
+  console.log('userState', userState);
 
   const formik = useFormik({
     enableReinitialize: true,
